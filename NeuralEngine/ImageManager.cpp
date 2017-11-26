@@ -1,9 +1,12 @@
 #include"ImageManager.h"
 
 
-void ImageManager::show_image_list()
+vector<unsigned char*> ImageManager::getRawImageData()
 {
-	image->loadImages(IMAGE_PATH);
-	vector<Mat>img_mat = image->readImages();
-	vector<unsigned char*>raw_img_data = image->readRawImageData();
+	return image->readRawImageData();
+}
+
+vector<Mat> ImageManager::getImageMatrices()
+{
+	return image->readImages();
 }

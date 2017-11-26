@@ -8,8 +8,11 @@ int main()
 
 	ImageManager* manager = new ImageManager();
 	
-	manager->show_image_list();
-
+	vector<Mat>data = manager->getImageMatrices();
+	for (auto i : data)
+	{
+		cout << manager->getImageHeight(i) << endl;
+	}
 
 	return 0;
 }

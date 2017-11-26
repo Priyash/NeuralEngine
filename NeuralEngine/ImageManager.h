@@ -15,14 +15,18 @@ public:
 	ImageManager()
 	{
 		image = new ImageLoader();
+		image->loadImages(IMAGE_PATH);
 	}
 
 	~ImageManager()
 	{
-
+		image = nullptr;
 	}
 
-	void show_image_list();
+	vector<Mat>getImageMatrices();
+	vector<unsigned char*>getRawImageData();
+	int getImageWidth(Mat src){ return src.cols; }
+	int getImageHeight(Mat src){ return src.rows; }
 };
 
 
