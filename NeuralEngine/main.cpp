@@ -8,11 +8,21 @@ int main()
 
 	ImageManager* manager = new ImageManager();
 	
-	vector<Mat>data = manager->getImageMatrices();
-	for (auto i : data)
+	vector<vector<Pixel>>pixel_list = manager->getRGBValues_list(IMAGE::RESIZE);
+
+	for (auto i : pixel_list)
 	{
-		cout << manager->getImageHeight(i) << endl;
+		vector<Pixel>px = i;
+		for (auto j : px)
+		{
+			cout << j.r << "," << j.g << "," << j.b << endl;
+			
+		}
+		break;
+		cout << px[0].r << "," << px[5].g << "," << px[5].b << endl;
 	}
+
+	
 
 	return 0;
 }
