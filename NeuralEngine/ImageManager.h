@@ -3,13 +3,7 @@
 #include"Image.h"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-
-struct Pixel
-{
-	float r;
-	float g;
-	float b;
-};
+#include"Util.h"
 
 enum IMAGE
 {
@@ -22,12 +16,18 @@ class ImageManager
 
 	
 	Image* image;
-	const string IMAGE_PATH = "Images_Input\\";
+	string IMAGE_PATH;
 	vector<Mat>resized_img_mat_list;
+	string CONFIG_FILE;
 public:
 	ImageManager()
 	{
 		image = new ImageLoader();
+		CONFIG_FILE = "config.txt";
+		Util::getInstance()->read_config_file(CONFIG_FILE);
+		Util::getInstance()->parse_config_file(CONFIG::BASE_IMAGE_PATH);
+		IMAGE_PATH = Util::getInstance()->getImage_Base_Path();
+		cout << IMAGE_PATH << endl;
 		image->loadImages(IMAGE_PATH);
 	}
 
@@ -37,14 +37,11 @@ public:
 	}
 
 	vector<Mat>getImageMatrices(IMAGE img);
-	vector<vector<Pixel>>getRGBValues_list(IMAGE img);
 	int getImageWidth(Mat src){ return src.cols; }
 	int getImageHeight(Mat src){ return src.rows; }
 	
 private:
-	vector<Pixel> compute_RGB_Values(Mat mat);
 	vector<Mat> resize_images(int width, int height, vector<Mat>img_mat_list);
-	vector<Mat>Normalize_Image_Mat(vector<Mat>);
 };
 
 

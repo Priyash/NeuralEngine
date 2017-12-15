@@ -8,6 +8,12 @@
     <Filter Include="ImageManager">
       <UniqueIdentifier>{52f00db9-e5f4-4af0-92fa-0335d6d1e950}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LayerManager">
+      <UniqueIdentifier>{376a7be6-19e0-490e-9785-2e5b56d7d2a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{f5152ee1-b2f3-4f25-8f00-06c11a6475eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Image.h">
@@ -15,6 +21,15 @@
     </ClInclude>
     <ClInclude Include="ImageManager.h">
       <Filter>ImageManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Layer.h">
+      <Filter>LayerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerManager.h">
+      <Filter>LayerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -25,5 +40,19 @@
     <ClCompile Include="ImageManager.cpp">
       <Filter>ImageManager</Filter>
     </ClCompile>
+    <ClCompile Include="Layer.cpp">
+      <Filter>LayerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="LayerManager.cpp">
+      <Filter>LayerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Util.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.txt">
+      <Filter>Utilities</Filter>
+    </Text>
   </ItemGroup>
 </Project>

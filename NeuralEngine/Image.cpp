@@ -66,18 +66,20 @@ vector<Mat> ImageLoader::readImages()
 
 Mat ImageLoader::readImage(string image_file)
 {
-	Mat img_mat = imread(image_file);
+	Mat img_mat = imread(image_file , CV_LOAD_IMAGE_COLOR);
+	img_mat.convertTo(img_mat, CV_32FC3);
 	return img_mat;
 }
 
-vector<unsigned char*>ImageLoader::readRawImageData()
+vector<Mat> ImageLoader::normalize_images(vector<Mat>img)
 {
-	for (auto i : image_matrices)
+	vector<Mat>norm_img_list;
+	for (auto i : img)
 	{
-		unsigned char* img_data = (unsigned char*)i.data;
-		raw_image_data_list.push_back(img_data);
+		normalize(i, i, 0, 1, cv::NORM_MINMAX);
+		norm_img_list.push_back(i);
 	}
 
-	
-	return raw_image_data_list;
+	return norm_img_list;
 }
+

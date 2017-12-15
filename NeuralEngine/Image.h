@@ -29,7 +29,7 @@ public:
 
 	virtual void loadImages(const string& image_base_path) = 0;
 	virtual vector<Mat> readImages() = 0;
-	virtual vector<unsigned char*>readRawImageData() = 0;
+	virtual vector<Mat>normalize_images(vector<Mat>img) = 0;
 
 };
 
@@ -41,7 +41,6 @@ class ImageLoader : public Image
 	WIN32_FIND_DATA fdata;
 	vector<string>image_list;
 	vector<Mat>image_matrices;
-	vector<unsigned char*>raw_image_data_list;
 	string image_base_path = "";
 public:
 	ImageLoader()
@@ -55,8 +54,8 @@ public:
 	}
 
 	virtual void loadImages(const string& image_base_path);
-	virtual vector<Mat> readImages();
-	virtual vector<unsigned char*>readRawImageData();
+	virtual vector<Mat>readImages();
+	virtual vector<Mat>normalize_images(vector<Mat>img);
 
 private:
 	string ToString(WCHAR* data);
