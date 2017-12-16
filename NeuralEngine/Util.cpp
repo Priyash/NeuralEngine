@@ -43,7 +43,6 @@ string Util::getKey(CONFIG_ID con)
 
 		return "IMAGE_RESIZE_WIDTH,IMAGE_RESIZE_HEIGHT";
 		break;
-
 	}
 }
 

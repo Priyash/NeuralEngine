@@ -33,6 +33,9 @@ class Util
 	static Util* util;
 	vector<Config>config_list;
 	Resize size;
+	string IMAGE_BASE_PATH_VALUE;
+	string IMAGE_RESIZE_WIDTH_VALUE;
+	string IMAGE_RESIZE_HEIGHT_VALUE;
 	Util();
 public:
 	static Util* getInstance();
@@ -41,9 +44,6 @@ public:
 	void parse_config_file(CONFIG_ID con);
 
 	//ADD THE GET METHOD FOR THE VALUE RETRIEVAL
-	string IMAGE_BASE_PATH_VALUE;
-	string IMAGE_RESIZE_WIDTH_VALUE;
-	string IMAGE_RESIZE_HEIGHT_VALUE;
 	string getImage_Base_Path();
 	Resize getResizeValue();
 
