@@ -25,7 +25,8 @@ public:
 		image = new ImageLoader();
 		CONFIG_FILE = "config.txt";
 		Util::getInstance()->read_config_file(CONFIG_FILE);
-		Util::getInstance()->parse_config_file(CONFIG::BASE_IMAGE_PATH);
+		Util::getInstance()->parse_config_file(CONFIG_ID::BASE_IMAGE_PATH);
+		Util::getInstance()->parse_config_file(CONFIG_ID::IMAGE_RESIZE);
 		IMAGE_PATH = Util::getInstance()->getImage_Base_Path();
 		cout << IMAGE_PATH << endl;
 		image->loadImages(IMAGE_PATH);

@@ -11,7 +11,8 @@ vector<Mat> ImageManager::getImageMatrices(IMAGE img)
 	}
 	else if (img == IMAGE::RESIZE)
 	{
-		img_mat_data_list = resize_images(128, 128, image->normalize_images(image->readImages()));
+
+		img_mat_data_list = resize_images(Util::getInstance()->getResizeValue().width, Util::getInstance()->getResizeValue().height, image->normalize_images(image->readImages()));
 	}
 	return img_mat_data_list;
 }
@@ -19,7 +20,7 @@ vector<Mat> ImageManager::getImageMatrices(IMAGE img)
 
 vector<Mat> ImageManager::resize_images(int width, int height, vector<Mat>img_mat_list)
 {
-	
+	cout << width << endl;
 	for (auto i : img_mat_list)
 	{
 		Mat resized_img;

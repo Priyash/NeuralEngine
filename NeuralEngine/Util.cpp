@@ -9,15 +9,44 @@ Util::Util()
 }
 
 
-void Util::parse_config_file(CONFIG con)
+void Util::parse_config_file(CONFIG_ID con)
 {
-	if (con == CONFIG::BASE_IMAGE_PATH)
+	if (con == CONFIG_ID::BASE_IMAGE_PATH)
 	{
-		IMAGE_BASE_PATH_KEY = "BASE_IMAGE_PATH";
-		IMAGE_BASE_PATH_VALUE = find_config_value_by_key(IMAGE_BASE_PATH_KEY);
+		string IMAGE_BASE_PATH_VALUE = find_config_value_by_key(getKey(con));
 		setImage_Base_Path(IMAGE_BASE_PATH_VALUE);
 	}
+	else if (con == CONFIG_ID::IMAGE_RESIZE)
+	{
+		string IMAGE_RESIZE = getKey(con);
+		vector<string>resize_list = split(IMAGE_RESIZE, ",");
+
+		IMAGE_RESIZE_WIDTH_VALUE = find_config_value_by_key(resize_list[0]);
+
+		IMAGE_RESIZE_HEIGHT_VALUE = find_config_value_by_key(resize_list[1]);
+
+		setResizeValue(stoi(IMAGE_RESIZE_WIDTH_VALUE), stoi(IMAGE_RESIZE_HEIGHT_VALUE));
+		resize_list.clear();
+	}
 }
+
+
+string Util::getKey(CONFIG_ID con)
+{
+	switch (con)
+	{
+	case CONFIG_ID::BASE_IMAGE_PATH:
+		return "BASE_IMAGE_PATH";
+		break;
+
+	case CONFIG_ID::IMAGE_RESIZE:
+
+		return "IMAGE_RESIZE_WIDTH,IMAGE_RESIZE_HEIGHT";
+		break;
+
+	}
+}
+
 
 void Util::setImage_Base_Path(string value)
 {
@@ -30,6 +59,17 @@ string Util::getImage_Base_Path()
 }
 
 
+void Util::setResizeValue(int width, int height)
+{
+	size.width = width;
+	size.height = height;
+}
+
+Resize Util::getResizeValue()
+{
+	return size;
+}
+
 string Util::find_config_value_by_key(string key)
 {
 	auto config_it = find_if(config_list.begin(), config_list.end(), [key](Config con)->bool{return con.config_key == key; });
@@ -39,14 +79,6 @@ string Util::find_config_value_by_key(string key)
 vector<string> Util::split(string data , string delim)
 {
 	vector<string>split_list;
-	/*size_t pos = 0;
-	std::string token;
-	while ((pos = data.find(delim)) != std::string::npos) {
-		token = data.substr(0, pos);
-		//std::cout << token << std::endl;
-		split_list.push_back(token);
-		//data.erase(0, pos + delim.length());
-	}*/
 	size_t len = data.length() + 1;
 	char* str = new char[len];
 	strcpy(str, data.c_str());
@@ -62,9 +94,6 @@ vector<string> Util::split(string data , string delim)
 		split_list.push_back(token);
 		pch = strtok(NULL, c_delim);
 	}
-
-
-
 
 	return split_list;
 }
