@@ -28,6 +28,11 @@ void Util::parse_config_file(CONFIG_ID con)
 		setResizeValue(stoi(IMAGE_RESIZE_WIDTH_VALUE), stoi(IMAGE_RESIZE_HEIGHT_VALUE));
 		resize_list.clear();
 	}
+	else if (con == CONFIG_ID::IMAGE_OUTPUT_PATH)
+	{
+		string Image_out_path = find_config_value_by_key(getKey(con));
+		setImageOutputPath(Image_out_path);
+	}
 }
 
 
@@ -50,6 +55,15 @@ string Util::getKey(CONFIG_ID con)
 void Util::setImage_Base_Path(string value)
 {
 	IMAGE_BASE_PATH_VALUE = value;
+}
+void Util::setImageOutputPath(string value)
+{
+	IMAGE_OUTPUT_PATH_VALUE = value;
+}
+
+string Util::getImageOutputPath()
+{
+	return IMAGE_OUTPUT_PATH_VALUE;
 }
 
 string Util::getImage_Base_Path()

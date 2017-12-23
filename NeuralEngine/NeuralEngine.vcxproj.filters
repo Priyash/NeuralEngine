@@ -14,6 +14,9 @@
     <Filter Include="Utilities">
       <UniqueIdentifier>{f5152ee1-b2f3-4f25-8f00-06c11a6475eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Exception">
+      <UniqueIdentifier>{7f6e3902-5733-4d45-9b51-f123fd7c1447}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Image.h">
@@ -31,12 +34,14 @@
     <ClInclude Include="Util.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="CudaException.h">
+      <Filter>Exception</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image.cpp">
       <Filter>ImageManager</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="ImageManager.cpp">
       <Filter>ImageManager</Filter>
     </ClCompile>
@@ -49,6 +54,10 @@
     <ClCompile Include="Util.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="CudaException.cpp">
+      <Filter>Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt">

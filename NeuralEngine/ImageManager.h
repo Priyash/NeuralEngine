@@ -35,6 +35,7 @@ public:
 	~ImageManager()
 	{
 		image = nullptr;
+		resized_img_mat_list.clear();
 	}
 
 	vector<Mat>getImageMatrices(IMAGE img);

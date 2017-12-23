@@ -24,7 +24,8 @@ struct Resize
 enum CONFIG_ID
 {
 	BASE_IMAGE_PATH,
-	IMAGE_RESIZE
+	IMAGE_RESIZE,
+	IMAGE_OUTPUT_PATH
 };
 
 class Util
@@ -36,6 +37,7 @@ class Util
 	string IMAGE_BASE_PATH_VALUE;
 	string IMAGE_RESIZE_WIDTH_VALUE;
 	string IMAGE_RESIZE_HEIGHT_VALUE;
+	string IMAGE_OUTPUT_PATH_VALUE;
 	Util();
 public:
 	static Util* getInstance();
@@ -46,6 +48,7 @@ public:
 	//ADD THE GET METHOD FOR THE VALUE RETRIEVAL
 	string getImage_Base_Path();
 	Resize getResizeValue();
+	string getImageOutputPath();
 
 private:
 	
@@ -57,7 +60,7 @@ private:
 	void setImage_Base_Path(string value);
 
 	void setResizeValue(int width, int height);
-	
+	void setImageOutputPath(string path);
 };
 
 
