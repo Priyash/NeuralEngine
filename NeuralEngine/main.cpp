@@ -52,7 +52,6 @@ int main()
 	cudnnStatus_t status;
 
 	
-
 	try
 	{
 		cudnnHandle_t cudnn;

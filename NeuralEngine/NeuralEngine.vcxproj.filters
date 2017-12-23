@@ -5,9 +5,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ImageManager">
-      <UniqueIdentifier>{52f00db9-e5f4-4af0-92fa-0335d6d1e950}</UniqueIdentifier>
-    </Filter>
     <Filter Include="LayerManager">
       <UniqueIdentifier>{376a7be6-19e0-490e-9785-2e5b56d7d2a7}</UniqueIdentifier>
     </Filter>
@@ -17,13 +14,16 @@
     <Filter Include="Exception">
       <UniqueIdentifier>{7f6e3902-5733-4d45-9b51-f123fd7c1447}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Image">
+      <UniqueIdentifier>{52f00db9-e5f4-4af0-92fa-0335d6d1e950}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Image.h">
-      <Filter>ImageManager</Filter>
+      <Filter>Image</Filter>
     </ClInclude>
     <ClInclude Include="ImageManager.h">
-      <Filter>ImageManager</Filter>
+      <Filter>Image</Filter>
     </ClInclude>
     <ClInclude Include="Layer.h">
       <Filter>LayerManager</Filter>
@@ -37,13 +37,16 @@
     <ClInclude Include="CudaException.h">
       <Filter>Exception</Filter>
     </ClInclude>
+    <ClInclude Include="ImageFactory.h">
+      <Filter>Image</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image.cpp">
-      <Filter>ImageManager</Filter>
+      <Filter>Image</Filter>
     </ClCompile>
     <ClCompile Include="ImageManager.cpp">
-      <Filter>ImageManager</Filter>
+      <Filter>Image</Filter>
     </ClCompile>
     <ClCompile Include="Layer.cpp">
       <Filter>LayerManager</Filter>
@@ -58,6 +61,9 @@
       <Filter>Exception</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ImageFactory.cpp">
+      <Filter>Image</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt">
