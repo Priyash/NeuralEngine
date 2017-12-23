@@ -17,14 +17,16 @@ ImageFactory::~ImageFactory()
 	image = nullptr;
 }
 
+//THIS METHOD IS ONLY REQUIRED WHEN THERE IS A NEED FOR LIST OF IMAGES NAME
 vector<string> ImageFactory::getImageList()
 {
 	return image->loadImages(IMAGE_PATH);
 }
 
+//THIS METHOD ONLY GET CALLED WHEN IMAGES OBJECT IS LOADED INTO THE MEMORY BY NORMALIZING THE IMAGES
 vector<Mat> ImageFactory::loadAndReadImages()
 {
-	vector<Mat>img_mat_data_list = image->normalize_images(image->readImages(image->loadImages(IMAGE_PATH)));
+	vector<Mat>img_mat_data_list = image->readImages(image->loadImages(IMAGE_PATH));
 	return img_mat_data_list;
 }
 
