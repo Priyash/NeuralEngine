@@ -45,14 +45,14 @@ vector<string> ImageLoader::list_images(const string& image_base_path)
 	return image_data_list;
 }
 
-void ImageLoader::loadImages(const string& image_base_path)
+vector<string> ImageLoader::loadImages(const string& image_base_path)
 {
-	image_list = list_images(image_base_path);
+	vector<string>image_list = list_images(image_base_path);
+	return image_list;
 }
 
 
-
-vector<Mat> ImageLoader::readImages()
+vector<Mat> ImageLoader::readImages(vector<string>image_list)
 {
 	for (auto i : image_list)
 	{

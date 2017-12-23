@@ -23,6 +23,7 @@ public:
 	}
 
 	vector<Mat>getImageMatrices(IMAGE img);
+	vector<string>getImageList();
 	int getImageWidth(Mat src){ return src.cols; }
 	int getImageHeight(Mat src){ return src.rows; }
 };

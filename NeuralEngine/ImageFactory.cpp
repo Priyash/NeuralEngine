@@ -17,11 +17,14 @@ ImageFactory::~ImageFactory()
 	image = nullptr;
 }
 
+vector<string> ImageFactory::getImageList()
+{
+	return image->loadImages(IMAGE_PATH);
+}
 
 vector<Mat> ImageFactory::loadAndReadImages()
 {
-	image->loadImages(IMAGE_PATH);
-	vector<Mat>img_mat_data_list = image->normalize_images(image->readImages());
+	vector<Mat>img_mat_data_list = image->normalize_images(image->readImages(image->loadImages(IMAGE_PATH)));
 	return img_mat_data_list;
 }
 

@@ -50,7 +50,6 @@ int main()
 	Mat image = data[0];
 	cudaSetDevice(1);
 	cudnnStatus_t status;
-
 	
 	try
 	{

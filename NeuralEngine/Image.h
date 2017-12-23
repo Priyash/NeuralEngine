@@ -27,9 +27,10 @@ public:
 
 	}
 
-	virtual void loadImages(const string& image_base_path) = 0;
-	virtual vector<Mat> readImages() = 0;
+	virtual vector<string> loadImages(const string& image_base_path) = 0;
+	virtual vector<Mat> readImages(vector<string>image_list) = 0;
 	virtual vector<Mat>normalize_images(vector<Mat>img) = 0;
+
 
 };
 
@@ -39,7 +40,6 @@ class ImageLoader : public Image
 
 	HANDLE handler;
 	WIN32_FIND_DATA fdata;
-	vector<string>image_list;
 	vector<Mat>image_matrices;
 	string image_base_path = "";
 public:
@@ -50,11 +50,11 @@ public:
 
 	~ImageLoader()
 	{
-
+		image_matrices.clear();
 	}
 
-	virtual void loadImages(const string& image_base_path);
-	virtual vector<Mat>readImages();
+	virtual vector<string> loadImages(const string& image_base_path);
+	virtual vector<Mat>readImages(vector<string>image_list);
 	virtual vector<Mat>normalize_images(vector<Mat>img);
 
 private:
