@@ -25,7 +25,9 @@ enum CONFIG_ID
 {
 	BASE_IMAGE_PATH,
 	IMAGE_RESIZE,
-	IMAGE_OUTPUT_PATH
+	IMAGE_OUTPUT_PATH,
+	IMAGE_BATCH,
+	IMAGE_CHANNELS
 };
 
 class Util
@@ -38,6 +40,9 @@ class Util
 	string IMAGE_RESIZE_WIDTH_VALUE;
 	string IMAGE_RESIZE_HEIGHT_VALUE;
 	string IMAGE_OUTPUT_PATH_VALUE;
+	int IMAGE_BATCH_VALUE;
+	int IMAGE_CHANNELS_VALUE;
+
 	Util();
 public:
 	static Util* getInstance();
@@ -49,6 +54,8 @@ public:
 	string getImage_Base_Path();
 	Resize getResizeValue();
 	string getImageOutputPath();
+	int getImageBatch();
+	int getImageChannel();
 
 private:
 	
@@ -61,6 +68,9 @@ private:
 
 	void setResizeValue(int width, int height);
 	void setImageOutputPath(string path);
+
+	void setImageBatch(int value);
+	void setImageChannel(int value);
 };
 
 

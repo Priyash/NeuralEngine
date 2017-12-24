@@ -87,8 +87,7 @@ int main()
 			/*horizontal_stride=*/1,
 			/*dilation_height=*/1,
 			/*dilation_width=*/1,
-			/*mode=*/CUDNN_CROSS_CORRELATION,
-			/*computeType=*/CUDNN_DATA_FLOAT);
+			/*mode=*/CUDNN_CROSS_CORRELATION);
 		check_cuda_status(status,"set_convolution_descriptor");
 
 		int batch_size{ 0 }, channels{ 0 }, height{ 0 }, width{ 0 };

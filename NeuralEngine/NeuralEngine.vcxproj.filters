@@ -5,17 +5,20 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="LayerManager">
-      <UniqueIdentifier>{376a7be6-19e0-490e-9785-2e5b56d7d2a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utilities">
-      <UniqueIdentifier>{f5152ee1-b2f3-4f25-8f00-06c11a6475eb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Exception">
       <UniqueIdentifier>{7f6e3902-5733-4d45-9b51-f123fd7c1447}</UniqueIdentifier>
     </Filter>
     <Filter Include="Image">
       <UniqueIdentifier>{52f00db9-e5f4-4af0-92fa-0335d6d1e950}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Layer">
+      <UniqueIdentifier>{376a7be6-19e0-490e-9785-2e5b56d7d2a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{f5152ee1-b2f3-4f25-8f00-06c11a6475eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PSNet">
+      <UniqueIdentifier>{f22dcb7b-4289-409f-bae3-d89c723a0083}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -26,19 +29,22 @@
       <Filter>Image</Filter>
     </ClInclude>
     <ClInclude Include="Layer.h">
-      <Filter>LayerManager</Filter>
-    </ClInclude>
-    <ClInclude Include="LayerManager.h">
-      <Filter>LayerManager</Filter>
+      <Filter>Layer</Filter>
     </ClInclude>
     <ClInclude Include="Util.h">
-      <Filter>Utilities</Filter>
+      <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="CudaException.h">
       <Filter>Exception</Filter>
     </ClInclude>
     <ClInclude Include="ImageFactory.h">
       <Filter>Image</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractLayerFactory.h">
+      <Filter>Layer</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvNet.h">
+      <Filter>PSNet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -49,13 +55,10 @@
       <Filter>Image</Filter>
     </ClCompile>
     <ClCompile Include="Layer.cpp">
-      <Filter>LayerManager</Filter>
-    </ClCompile>
-    <ClCompile Include="LayerManager.cpp">
-      <Filter>LayerManager</Filter>
+      <Filter>Layer</Filter>
     </ClCompile>
     <ClCompile Include="Util.cpp">
-      <Filter>Utilities</Filter>
+      <Filter>Util</Filter>
     </ClCompile>
     <ClCompile Include="CudaException.cpp">
       <Filter>Exception</Filter>
@@ -64,10 +67,16 @@
     <ClCompile Include="ImageFactory.cpp">
       <Filter>Image</Filter>
     </ClCompile>
+    <ClCompile Include="AbstractLayerFactory.cpp">
+      <Filter>Layer</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvNet.cpp">
+      <Filter>PSNet</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt">
-      <Filter>Utilities</Filter>
+      <Filter>Util</Filter>
     </Text>
   </ItemGroup>
 </Project>

@@ -33,6 +33,17 @@ void Util::parse_config_file(CONFIG_ID con)
 		string Image_out_path = find_config_value_by_key(getKey(con));
 		setImageOutputPath(Image_out_path);
 	}
+	else if (con == CONFIG_ID::IMAGE_BATCH)
+	{
+		string Image_Batch = find_config_value_by_key(getKey(con));
+		setImageBatch(stoi(Image_Batch));
+	}
+
+	else if (con == CONFIG_ID::IMAGE_CHANNELS)
+	{
+		string Image_Channel = find_config_value_by_key(getKey(con));
+		setImageChannel(stoi(Image_Channel));
+	}
 }
 
 
@@ -82,6 +93,39 @@ Resize Util::getResizeValue()
 {
 	return size;
 }
+
+
+
+void Util::setImageBatch(int value)
+{
+	this->IMAGE_BATCH_VALUE = value;
+}
+
+int Util::getImageBatch()
+{
+	return IMAGE_BATCH_VALUE;
+}
+
+void Util::setImageChannel(int value)
+{
+	this->IMAGE_CHANNELS_VALUE = value;
+}
+
+int Util::getImageChannel()
+{
+	return IMAGE_CHANNELS_VALUE;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 string Util::find_config_value_by_key(string key)
 {

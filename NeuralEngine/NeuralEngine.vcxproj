@@ -100,13 +100,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>F:\Softwares\OpenCV\opencv\build\include\;C:\Program Files\NVIDIA GPU Computing Toolkit\cudnn-8.0-windows10-x64-v7\cuda\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Softwares\OpenCV\opencv\build\include\;C:\Program Files\NVIDIA GPU Computing Toolkit\cudnn-8.0-windows10-x64-v5.0-ga\cuda\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opencv_world331.lib;opencv_world331d.lib;cudnn.lib;cuda.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>F:\Softwares\OpenCV\opencv\build\x64\vc14\lib;C:\Program Files\NVIDIA GPU Computing Toolkit\cudnn-8.0-windows10-x64-v7\cuda\lib\x64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\lib\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>F:\Softwares\OpenCV\opencv\build\x64\vc14\lib;C:\Program Files\NVIDIA GPU Computing Toolkit\cudnn-8.0-windows10-x64-v5.0-ga\cuda\lib\x64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\lib\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -147,21 +147,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AbstractLayerFactory.h" />
+    <ClInclude Include="ConvNet.h" />
     <ClInclude Include="CudaException.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImageFactory.h" />
     <ClInclude Include="ImageManager.h" />
     <ClInclude Include="Layer.h" />
-    <ClInclude Include="LayerManager.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AbstractLayerFactory.cpp" />
+    <ClCompile Include="ConvNet.cpp" />
     <ClCompile Include="CudaException.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageFactory.cpp" />
     <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="Layer.cpp" />
-    <ClCompile Include="LayerManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
