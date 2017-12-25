@@ -14,20 +14,26 @@ void AbstractLayer::check_cuda_status(cudnnStatus_t status, string error_module)
 InputLayer::InputLayer(const InputShape& shape)
 {
 	this->shape = shape;
+	d_input = nullptr;
 }
 
 InputLayer::~InputLayer()
 {
-
+	d_input = nullptr;
 }
 
 
-void InputLayer::allocateInputData(Mat data)
+
+void InputLayer::allocateInputDataToGPU()
 {
+	ImageManager* manager = new ImageManager();
+	vector<Mat>img_data_list = manager->getImageMatrices(IMAGE::RESIZE);
 	int image_bytes = shape.batch_size*shape.channels*shape.rows*shape.cols*sizeof(float);
-	float* d_input = nullptr;
 	cudaMalloc(&d_input, image_bytes);
-	cudaMemcpy(d_input, data.ptr<float>(0), image_bytes, cudaMemcpyHostToDevice);
+	for (auto i : img_data_list)
+	{
+		cudaMemcpy(d_input, img_data_list[0].ptr<float>(0), image_bytes, cudaMemcpyHostToDevice);
+	}
 	
 }
 
@@ -55,4 +61,14 @@ void InputLayer::setTensorDescriptor()
 	{
 		cout << ce.what() << endl;
 	}
+}
+
+cudnnTensorDescriptor_t InputLayer::getTensorDescriptor()
+{
+	return input_descriptor;
+}
+
+float* InputLayer::getInputDataPointer()
+{
+	return d_input;
 }
