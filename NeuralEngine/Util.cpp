@@ -33,16 +33,16 @@ void Util::parse_config_file(CONFIG_ID con)
 		string Image_out_path = find_config_value_by_key(getKey(con));
 		setImageOutputPath(Image_out_path);
 	}
-	else if (con == CONFIG_ID::IMAGE_BATCH)
+	else if (con == CONFIG_ID::IMAGE_BATCH_SIZE)
 	{
-		string Image_Batch = find_config_value_by_key(getKey(con));
-		setImageBatch(stoi(Image_Batch));
+		string Image_Batch_Size = find_config_value_by_key(getKey(con));
+		setImageBatchSize(stoi(Image_Batch_Size));
 	}
 
-	else if (con == CONFIG_ID::IMAGE_CHANNELS)
+	else if (con == CONFIG_ID::IMAGE_INPUT_FEATURE_MAP)
 	{
 		string Image_Channel = find_config_value_by_key(getKey(con));
-		setImageChannel(stoi(Image_Channel));
+		setImageInputFeatureMap(stoi(Image_Channel));
 	}
 }
 
@@ -96,24 +96,24 @@ Resize Util::getResizeValue()
 
 
 
-void Util::setImageBatch(int value)
+void Util::setImageBatchSize(int value)
 {
-	this->IMAGE_BATCH_VALUE = value;
+	this->IMAGE_BATCH_SIZE_VALUE = value;
 }
 
-int Util::getImageBatch()
+int Util::getImageBatchSize()
 {
-	return IMAGE_BATCH_VALUE;
+	return IMAGE_BATCH_SIZE_VALUE;
 }
 
-void Util::setImageChannel(int value)
+void Util::setImageInputFeatureMap(int value)
 {
-	this->IMAGE_CHANNELS_VALUE = value;
+	this->IMAGE_INPUT_FEATURE_MAP_VALUE = value;
 }
 
-int Util::getImageChannel()
+int Util::getImageInputFeatureMap()
 {
-	return IMAGE_CHANNELS_VALUE;
+	return IMAGE_INPUT_FEATURE_MAP_VALUE;
 }
 
 
