@@ -41,8 +41,13 @@ void Util::parse_config_file(CONFIG_ID con)
 
 	else if (con == CONFIG_ID::IMAGE_INPUT_FEATURE_MAP)
 	{
-		string Image_Channel = find_config_value_by_key(getKey(con));
-		setImageInputFeatureMap(stoi(Image_Channel));
+		string Image_Input_Feature_Map = find_config_value_by_key(getKey(con));
+		setImageInputFeatureMap(stoi(Image_Input_Feature_Map));
+	}
+	else if (con == CONFIG_ID::IMAGE_OUTPUT_FEATURE_MAP)
+	{
+		string Image_Output_Feature_Map = find_config_value_by_key(getKey(con));
+		setImageInputFeatureMap(stoi(Image_Output_Feature_Map));
 	}
 }
 
@@ -114,6 +119,16 @@ void Util::setImageInputFeatureMap(int value)
 int Util::getImageInputFeatureMap()
 {
 	return IMAGE_INPUT_FEATURE_MAP_VALUE;
+}
+
+void Util::setImageOutputFeatureMap(int value)
+{
+	this->IMAGE_OUTPUT_FEATURE_MAP_VALUE = value;
+}
+
+int Util::getImageOutputFeatureMap()
+{
+	return IMAGE_OUTPUT_FEATURE_MAP_VALUE;
 }
 
 

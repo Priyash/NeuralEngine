@@ -7,7 +7,7 @@
 
 using namespace std;
 
-struct InputShape
+struct TensorShape
 {
 	int batch_size;
 	int feature_map;
@@ -31,7 +31,6 @@ struct BiasShape
 	int cols;
 };
 
-
 struct ConvShape
 {
 	int pad_height;
@@ -42,70 +41,97 @@ struct ConvShape
 	int dilation_width;
 };
 
-class AbstractLayer
+class AbstractTensorLayer
 {
-
+protected:
+	cudnnStatus_t status;
 public:
-	AbstractLayer(){}
-	~AbstractLayer(){}
+	AbstractTensorLayer(){}
+	~AbstractTensorLayer(){}
 	virtual void createTensorDescriptor() = 0;
 	virtual void setTensorDescriptor() = 0;
 	virtual cudnnTensorDescriptor_t getTensorDescriptor() = 0;
 	virtual cudnnFilterDescriptor_t getFilterDescriptor() = 0;
 	virtual cudnnConvolutionDescriptor_t getConvDescriptor() = 0;
+	virtual TensorShape getConvolutedImagedOutDim(cudnnConvolutionDescriptor_t conDesc, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filterDesc) = 0;
 
 	void check_cuda_status(cudnnStatus_t status, string error_module);
+
+
+	virtual cudnnConvolutionFwdAlgo_t getConvFwdAlgo(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
+		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,
+		cudnnConvolutionFwdPreference_t convFwdPref, size_t mem_limit_bytes,
+		cudnnConvolutionFwdAlgo_t conv_fwd_algo) = 0;
+	virtual size_t getConvForwardWorkSpacesize(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
+		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,
+		cudnnConvolutionFwdAlgo_t conv_algo) = 0;
 };
 
 
 
-class InputLayer : public AbstractLayer
+class TensorLayer : public AbstractTensorLayer
 {
-	InputShape shape;
-	cudnnTensorDescriptor_t input_descriptor;
-	cudnnFilterDescriptor_t  filter_desc;
-	cudnnConvolutionDescriptor_t conv_desc;
-	cudnnStatus_t status;
+	TensorShape shape;
+	cudnnTensorDescriptor_t descriptor;
 public:
-	InputLayer(const InputShape& shape);
-	~InputLayer();
+	TensorLayer(const TensorShape& shape);
+	~TensorLayer();
 	void createTensorDescriptor();
 	void setTensorDescriptor();
 	cudnnTensorDescriptor_t getTensorDescriptor();
-	cudnnFilterDescriptor_t getFilterDescriptor(){ return filter_desc; }
-	cudnnConvolutionDescriptor_t getConvDescriptor(){ return conv_desc; }
+	cudnnFilterDescriptor_t getFilterDescriptor(){ cudnnFilterDescriptor_t  filter_desc;  return filter_desc; }
+	cudnnConvolutionDescriptor_t getConvDescriptor(){ cudnnConvolutionDescriptor_t conv_desc ; return conv_desc; }
+
+	TensorShape getConvolutedImagedOutDim(cudnnConvolutionDescriptor_t conDesc, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filterDesc){ TensorShape sh; return sh; }
+
+	cudnnConvolutionFwdAlgo_t getConvFwdAlgo(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
+		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,
+		cudnnConvolutionFwdPreference_t convFwdPref, size_t mem_limit_bytes,
+		cudnnConvolutionFwdAlgo_t conv_fwd_algo){
+		cudnnConvolutionFwdAlgo_t convolution_algorithm; return convolution_algorithm;
+	}
+	size_t getConvForwardWorkSpacesize(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
+		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,
+		cudnnConvolutionFwdAlgo_t conv_algo){
+		size_t s; return s;
+	}
 };
 
 
-
-
-class FilterLayer : public AbstractLayer
+class FilterLayer : public AbstractTensorLayer
 {
 	cudnnFilterDescriptor_t  filter_descriptor;
-	cudnnTensorDescriptor_t tensor_desc;
-	cudnnConvolutionDescriptor_t conv_desc;
-	cudnnStatus_t status;
 	FilterShape shape;
 public:
 	FilterLayer(const FilterShape& shape);
 	~FilterLayer();
 	void createTensorDescriptor();
 	void setTensorDescriptor();
-	cudnnTensorDescriptor_t getTensorDescriptor(){ return tensor_desc; }
+	cudnnTensorDescriptor_t getTensorDescriptor(){ cudnnTensorDescriptor_t tensor_desc; return tensor_desc; }
 	cudnnFilterDescriptor_t getFilterDescriptor();
-	cudnnConvolutionDescriptor_t getConvDescriptor(){ return conv_desc; }
+	cudnnConvolutionDescriptor_t getConvDescriptor(){ cudnnConvolutionDescriptor_t conv_desc ; return conv_desc; }
+
+
+	TensorShape getConvolutedImagedOutDim(cudnnConvolutionDescriptor_t conDesc, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filterDesc){ TensorShape sh; return sh; }
 	
+	cudnnConvolutionFwdAlgo_t getConvFwdAlgo(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
+		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,
+		cudnnConvolutionFwdPreference_t convFwdPref, size_t mem_limit_bytes,
+		cudnnConvolutionFwdAlgo_t conv_fwd_algo){
+		cudnnConvolutionFwdAlgo_t convolution_algorithm; return convolution_algorithm;
+	}
+	size_t getConvForwardWorkSpacesize(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
+		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,
+		cudnnConvolutionFwdAlgo_t conv_algo){
+		size_t s; return s;
+	}
 };
 
 
 
-class Bias : public AbstractLayer
+class Bias : public AbstractTensorLayer
 {
-
 	cudnnTensorDescriptor_t  bias_descriptor;
-	cudnnFilterDescriptor_t  filter_des;
-	cudnnConvolutionDescriptor_t conv_desc;
-	cudnnStatus_t status;
 	BiasShape bias_shape;
 public:
 	Bias(const BiasShape& bias_shape);
@@ -113,28 +139,52 @@ public:
 	void createTensorDescriptor();
 	void setTensorDescriptor();
 	cudnnTensorDescriptor_t getTensorDescriptor();
-	cudnnFilterDescriptor_t getFilterDescriptor(){ return filter_des; }
-	cudnnConvolutionDescriptor_t getConvDescriptor(){ return conv_desc; }
+	cudnnFilterDescriptor_t getFilterDescriptor(){ cudnnFilterDescriptor_t  filter_des; return filter_des; }
+	cudnnConvolutionDescriptor_t getConvDescriptor(){ cudnnConvolutionDescriptor_t conv_desc; return conv_desc; }
+
+	TensorShape getConvolutedImagedOutDim(cudnnConvolutionDescriptor_t conDesc, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filterDesc){ TensorShape sh; return sh; }
+
+	cudnnConvolutionFwdAlgo_t getConvFwdAlgo(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
+		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,
+		cudnnConvolutionFwdPreference_t convFwdPref, size_t mem_limit_bytes,
+		cudnnConvolutionFwdAlgo_t conv_fwd_algo){
+		cudnnConvolutionFwdAlgo_t convolution_algorithm; return convolution_algorithm;
+	}
+	size_t getConvForwardWorkSpacesize(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
+		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,
+		cudnnConvolutionFwdAlgo_t conv_algo){
+		size_t s; return s;
+	}
+
 };
 
 
-class ConvLayer : public AbstractLayer
+
+
+class ConvTensorLayer : public AbstractTensorLayer
 {
 	cudnnConvolutionDescriptor_t convolution_descriptor;
-	cudnnFilterDescriptor_t  filter_desc;
-	cudnnTensorDescriptor_t tensor_desc;
-	cudnnStatus_t status;
 	ConvShape shape;
 public:
-	ConvLayer(const ConvShape& shape);
-	~ConvLayer();
+	ConvTensorLayer(const ConvShape& shape);
+	~ConvTensorLayer();
 	void createTensorDescriptor();
 	void setTensorDescriptor();
-	cudnnTensorDescriptor_t getTensorDescriptor(){ return tensor_desc; }
-	cudnnFilterDescriptor_t getFilterDescriptor(){ return filter_desc; }
+	cudnnTensorDescriptor_t getTensorDescriptor(){ cudnnTensorDescriptor_t tensor_desc; return tensor_desc; }
+	cudnnFilterDescriptor_t getFilterDescriptor(){ cudnnFilterDescriptor_t  filter_desc; return filter_desc; }
 	cudnnConvolutionDescriptor_t getConvDescriptor();
+
+	//CONVOLUTION RELATED METHODS
+
+	TensorShape getConvolutedImagedOutDim(cudnnConvolutionDescriptor_t conDesc, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filterDesc);
+
+	cudnnConvolutionFwdAlgo_t getConvFwdAlgo(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
+		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,cudnnConvolutionFwdPreference_t convFwdPref,
+		size_t mem_limit_bytes,cudnnConvolutionFwdAlgo_t conv_fwd_algo);
+
+	size_t getConvForwardWorkSpacesize(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc, cudnnConvolutionDescriptor_t convDesc,
+		cudnnTensorDescriptor_t outDesc, cudnnConvolutionFwdAlgo_t conv_algo);
+
 };
-
-
 
 #endif

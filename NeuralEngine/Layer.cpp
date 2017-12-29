@@ -2,7 +2,7 @@
 
 
 
-void AbstractLayer::check_cuda_status(cudnnStatus_t status, string error_module)
+void AbstractTensorLayer::check_cuda_status(cudnnStatus_t status, string error_module)
 {
 	if (status != CUDNN_STATUS_SUCCESS)
 	{
@@ -11,22 +11,22 @@ void AbstractLayer::check_cuda_status(cudnnStatus_t status, string error_module)
 	return;
 }
 
-InputLayer::InputLayer(const InputShape& shape)
+TensorLayer::TensorLayer(const TensorShape& shape)
 {
 	this->shape = shape;
 }
 
-InputLayer::~InputLayer()
+TensorLayer::~TensorLayer()
 {
 }
 
 
-void InputLayer::createTensorDescriptor()
+void TensorLayer::createTensorDescriptor()
 {
 	try
 	{
-		status = cudnnCreateTensorDescriptor(&input_descriptor);
-		check_cuda_status(status, "Input_Descriptor");
+		status = cudnnCreateTensorDescriptor(&descriptor);
+		check_cuda_status(status, "Tensor_Descriptor");
 	}
 	catch (CudaException& ce)
 	{
@@ -34,12 +34,12 @@ void InputLayer::createTensorDescriptor()
 	}
 }
 
-void InputLayer::setTensorDescriptor()
+void TensorLayer::setTensorDescriptor()
 {
 	try
 	{
-		status = cudnnSetTensor4dDescriptor(input_descriptor, CUDNN_TENSOR_NHWC, CUDNN_DATA_FLOAT, shape.batch_size, shape.feature_map, shape.rows, shape.cols);
-		check_cuda_status(status, "Set_Input_Descriptor");
+		status = cudnnSetTensor4dDescriptor(descriptor, CUDNN_TENSOR_NHWC, CUDNN_DATA_FLOAT, shape.batch_size, shape.feature_map, shape.rows, shape.cols);
+		check_cuda_status(status, "Set_Tensor_Descriptor");
 	}
 	catch (CudaException& ce)
 	{
@@ -47,9 +47,9 @@ void InputLayer::setTensorDescriptor()
 	}
 }
 
-cudnnTensorDescriptor_t InputLayer::getTensorDescriptor()
+cudnnTensorDescriptor_t TensorLayer::getTensorDescriptor()
 {
-	return input_descriptor;
+	return descriptor;
 }
 
 
@@ -145,20 +145,19 @@ cudnnTensorDescriptor_t Bias::getTensorDescriptor()
 
 //==========================================================================BIAS_TENSOR_END============================================================
 
-
 //===========================================================================CONV_TENSOR============================================================
 
-ConvLayer::ConvLayer(const ConvShape& shape)
+ConvTensorLayer::ConvTensorLayer(const ConvShape& shape)
 {
 	this->shape = shape;
 }
 
-ConvLayer::~ConvLayer()
+ConvTensorLayer::~ConvTensorLayer()
 {
 
 }
 
-void ConvLayer::createTensorDescriptor()
+void ConvTensorLayer::createTensorDescriptor()
 {
 	try
 	{
@@ -171,7 +170,7 @@ void ConvLayer::createTensorDescriptor()
 	}
 }
 
-void ConvLayer::setTensorDescriptor()
+void ConvTensorLayer::setTensorDescriptor()
 {
 	try
 	{
@@ -184,10 +183,70 @@ void ConvLayer::setTensorDescriptor()
 	}
 }
 
-cudnnConvolutionDescriptor_t ConvLayer::getConvDescriptor()
+cudnnConvolutionDescriptor_t ConvTensorLayer::getConvDescriptor()
 {
 	return convolution_descriptor;
 }
 
 
-//==========================================================================CONV_TENSOR_END============================================================
+TensorShape ConvTensorLayer::getConvolutedImagedOutDim(cudnnConvolutionDescriptor_t conDesc,cudnnTensorDescriptor_t inDesc , cudnnFilterDescriptor_t filterDesc)
+{
+	TensorShape outImageShape;
+	try
+	{
+		status = cudnnGetConvolution2dForwardOutputDim(conDesc, inDesc, filterDesc, &outImageShape.batch_size, &outImageShape.feature_map, &outImageShape.rows, &outImageShape.cols);
+		check_cuda_status(status, "cudnnGetConvolution2dForwardOutputDim");
+	}
+	catch (CudaException& ce)
+	{
+		cout << ce.what() << endl;
+	}
+
+	return outImageShape;
+}
+
+
+
+
+
+cudnnConvolutionFwdAlgo_t ConvTensorLayer::getConvFwdAlgo(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc, cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc, cudnnConvolutionFwdPreference_t convFwdPref, size_t mem_limit_bytes, cudnnConvolutionFwdAlgo_t conv_fwd_algo)
+{
+	cudnnConvolutionFwdAlgo_t convolution_algorithm;
+
+	try
+	{
+		status = cudnnGetConvolutionForwardAlgorithm(cudnn, inDesc, filDesc, convDesc, outDesc, CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0, &convolution_algorithm);
+		check_cuda_status(status,"cudnnGetConvolutionForwardAlgorithm");
+	}
+	catch (CudaException& ce)
+	{
+		cout << ce.what() << endl;
+	}
+
+	return convolution_algorithm;
+}
+
+
+size_t ConvTensorLayer::getConvForwardWorkSpacesize(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc, cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc, cudnnConvolutionFwdAlgo_t conv_algo)
+{
+	size_t workspace_bytes;
+	try
+	{
+		status = cudnnGetConvolutionForwardWorkspaceSize(cudnn, inDesc, filDesc, convDesc, outDesc, conv_algo, &workspace_bytes);
+		check_cuda_status(status , "cudnnGetConvolutionForwardWorkspaceSize");
+	}
+	catch (CudaException& ce)
+	{
+		cout << ce.what() << endl;
+	}
+
+	return workspace_bytes;
+}
+
+
+
+
+
+
+
+//==========================================================================CONV_TENSOR_END=============================================

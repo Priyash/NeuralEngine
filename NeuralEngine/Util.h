@@ -27,7 +27,8 @@ enum CONFIG_ID
 	IMAGE_RESIZE,
 	IMAGE_OUTPUT_PATH,
 	IMAGE_BATCH_SIZE,
-	IMAGE_INPUT_FEATURE_MAP
+	IMAGE_INPUT_FEATURE_MAP,
+	IMAGE_OUTPUT_FEATURE_MAP
 };
 
 class Util
@@ -42,6 +43,7 @@ class Util
 	string IMAGE_OUTPUT_PATH_VALUE;
 	int IMAGE_BATCH_SIZE_VALUE;
 	int IMAGE_INPUT_FEATURE_MAP_VALUE;
+	int IMAGE_OUTPUT_FEATURE_MAP_VALUE;
 
 	Util();
 public:
@@ -56,21 +58,24 @@ public:
 	string getImageOutputPath();
 	int getImageBatchSize();
 	int getImageInputFeatureMap();
+	int getImageOutputFeatureMap();
 
 private:
 	
 	vector<string>split(string data, string delim);
 	string find_config_value_by_key(string key);
-
 	string getKey(CONFIG_ID con);
+
+
 	//ADD THE SET METHOD FOR VALUE SET FROM CONFIG FILE
 	void setImage_Base_Path(string value);
 
 	void setResizeValue(int width, int height);
 	void setImageOutputPath(string path);
-
 	void setImageBatchSize(int value);
+
 	void setImageInputFeatureMap(int value);
+	void setImageOutputFeatureMap(int value);
 };
 
 

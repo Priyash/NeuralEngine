@@ -4,7 +4,6 @@
 ConvNet::ConvNet()
 {
 	inputfactory = new InputLayerFactory();
-	inputfactory->createInputLayer();
 }
 
 
