@@ -30,7 +30,9 @@ public:
 class ImageFactory :public AbstractImageFactory
 {
 	Image* image;
-	string IMAGE_PATH;
+	string IMAGE_INPUT_PATH;
+	int IMAGE_RESIZE_WIDTH;
+	int IMAGE_RESIZE_HEIGHT;
 	string CONFIG_FILE;
 public:
 	ImageFactory();

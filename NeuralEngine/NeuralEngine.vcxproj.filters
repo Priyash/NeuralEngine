@@ -75,8 +75,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="config.txt">
+    <None Include="config.json">
       <Filter>Util</Filter>
-    </Text>
+    </None>
   </ItemGroup>
 </Project>

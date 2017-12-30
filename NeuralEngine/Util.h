@@ -5,77 +5,46 @@
 #include<iostream>
 #include<fstream>
 #include<algorithm>
-
+#include<rapidjson\document.h>
+#include "rapidjson\writer.h"
+#include "rapidjson\stringbuffer.h"
+#include <fstream>
+#include <rapidjson/istreamwrapper.h>
 
 using namespace std;
+using namespace rapidjson;
 
-struct Config
+struct JSON_VALUE
 {
-	string config_key;
-	string config_value;
+	string json_str_value;
+	int json_int_value;
 };
 
-struct Resize
+enum CONFIG
 {
-	int width;
-	int height;
+	INPUT_SHAPE,
+	TENSOR_SHAPE,
+	BIAS_SHAPE,
+	FILTER_SHAPE,
+	CONV_SHAPE
 };
 
-enum CONFIG_ID
-{
-	BASE_IMAGE_PATH,
-	IMAGE_RESIZE,
-	IMAGE_OUTPUT_PATH,
-	IMAGE_BATCH_SIZE,
-	IMAGE_INPUT_FEATURE_MAP,
-	IMAGE_OUTPUT_FEATURE_MAP
-};
 
 class Util
 {
-	string CONFIG_PATH;
 	static Util* util;
-	vector<Config>config_list;
-	Resize size;
-	string IMAGE_BASE_PATH_VALUE;
-	string IMAGE_RESIZE_WIDTH_VALUE;
-	string IMAGE_RESIZE_HEIGHT_VALUE;
-	string IMAGE_OUTPUT_PATH_VALUE;
-	int IMAGE_BATCH_SIZE_VALUE;
-	int IMAGE_INPUT_FEATURE_MAP_VALUE;
-	int IMAGE_OUTPUT_FEATURE_MAP_VALUE;
-
 	Util();
+	Document doc;
+	string config_file;
 public:
 	static Util* getInstance();
-	void read_config_file(string config_file);
-
-	void parse_config_file(CONFIG_ID con);
-
-	//ADD THE GET METHOD FOR THE VALUE RETRIEVAL
-	string getImage_Base_Path();
-	Resize getResizeValue();
-	string getImageOutputPath();
-	int getImageBatchSize();
-	int getImageInputFeatureMap();
-	int getImageOutputFeatureMap();
-
+	void read_Json();
+	JSON_VALUE getValue(CONFIG con, string key);
+	vector<JSON_VALUE> getValues(CONFIG con);
 private:
+	string toStr(CONFIG con);
 	
-	vector<string>split(string data, string delim);
-	string find_config_value_by_key(string key);
-	string getKey(CONFIG_ID con);
 
-
-	//ADD THE SET METHOD FOR VALUE SET FROM CONFIG FILE
-	void setImage_Base_Path(string value);
-
-	void setResizeValue(int width, int height);
-	void setImageOutputPath(string path);
-	void setImageBatchSize(int value);
-
-	void setImageInputFeatureMap(int value);
-	void setImageOutputFeatureMap(int value);
 };
 
 
