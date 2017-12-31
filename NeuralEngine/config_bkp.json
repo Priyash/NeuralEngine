@@ -1,0 +1,7 @@
+{  
+   "hello": "world",
+   "Input_Shape":{  
+      "Image_Input_Path":"Images_Input//",
+      "Image_Output_Path":"Images_Output//"
+   }
+}

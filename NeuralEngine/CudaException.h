@@ -4,6 +4,7 @@
 #include<iostream>
 #include <exception>
 #include<cudnn.h>
+#include<cublas_v2.h>
 #include<string>
 
 using namespace std;
@@ -14,7 +15,11 @@ class CudaException :public exception
 public:
 
 	CudaException(cudnnStatus_t status, string error_module);
+	CudaException(cublasStatus_t status, string error_module);
 	virtual const char* what()const throw();
+
+private:
+	const char* cublasGetErrorString(cublasStatus_t status);
 };
 
 

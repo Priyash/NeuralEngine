@@ -5,6 +5,7 @@
 class ConvNet
 {
 	AbstractLayerFactory* inputfactory;
+
 public:
 	ConvNet();
 	~ConvNet();

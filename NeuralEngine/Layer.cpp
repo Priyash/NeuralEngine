@@ -11,6 +11,15 @@ void AbstractTensorLayer::check_cuda_status(cudnnStatus_t status, string error_m
 	return;
 }
 
+void AbstractTensorLayer::check_cuda_status(cublasStatus_t status, string error_module)
+{
+	if (status != CUBLAS_STATUS_SUCCESS)
+	{
+		throw CudaException(status, error_module);
+	}
+	return;
+}
+
 TensorLayer::TensorLayer(const TensorShape& shape)
 {
 	this->shape = shape;
@@ -209,13 +218,13 @@ TensorShape ConvTensorLayer::getConvolutedImagedOutDim(cudnnConvolutionDescripto
 
 
 
-cudnnConvolutionFwdAlgo_t ConvTensorLayer::getConvFwdAlgo(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc, cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc, cudnnConvolutionFwdPreference_t convFwdPref, size_t mem_limit_bytes, cudnnConvolutionFwdAlgo_t conv_fwd_algo)
+cudnnConvolutionFwdAlgo_t ConvTensorLayer::getConvFwdAlgo(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc, cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc, cudnnConvolutionFwdPreference_t convFwdPref, size_t mem_limit_bytes)
 {
 	cudnnConvolutionFwdAlgo_t convolution_algorithm;
 
 	try
 	{
-		status = cudnnGetConvolutionForwardAlgorithm(cudnn, inDesc, filDesc, convDesc, outDesc, CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0, &convolution_algorithm);
+		status = cudnnGetConvolutionForwardAlgorithm(cudnn, inDesc, filDesc, convDesc, outDesc, convFwdPref, mem_limit_bytes, &convolution_algorithm);
 		check_cuda_status(status,"cudnnGetConvolutionForwardAlgorithm");
 	}
 	catch (CudaException& ce)
@@ -250,3 +259,63 @@ size_t ConvTensorLayer::getConvForwardWorkSpacesize(cudnnHandle_t cudnn, cudnnTe
 
 
 //==========================================================================CONV_TENSOR_END=============================================
+
+
+//========================================================CUDNN_HANDLERS_START==========================================================
+
+CudnnHandler::CudnnHandler()
+{
+
+}
+
+CudnnHandler::~CudnnHandler()
+{
+	try
+	{
+		cudnnDestroy(cudnnHandler);
+	}
+	catch(CudaException& ce)
+	{
+		cout << ce.what() << endl;
+	}
+}
+
+
+
+void CudnnHandler::createCudnnHandler()
+{
+	try
+	{
+		status = cudnnCreate(&cudnnHandler);
+		check_cuda_status(status, "cudnnCreate");
+	}
+	catch (CudaException& ce)
+	{
+		cout << ce.what() << endl;
+	}
+}
+
+void CudnnHandler::createCublasHandler()
+{
+	try
+	{
+		cublas_status = cublasCreate_v2(&cublasHandler);
+		check_cuda_status(cublas_status, "cublasCreate");
+	}
+	catch (CudaException& ce)
+	{
+		cout << ce.what() << endl;
+	}
+}
+
+cudnnHandle_t CudnnHandler::getCudnnHandler()
+{
+	return cudnnHandler;
+}
+
+
+cublasHandle_t CudnnHandler::getCublasHandler()
+{
+	return cublasHandler;
+}
+
