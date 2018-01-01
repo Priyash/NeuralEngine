@@ -150,6 +150,7 @@
     <ClInclude Include="AbstractLayerFactory.h" />
     <ClInclude Include="ConvNet.h" />
     <ClInclude Include="CudaException.h" />
+    <ClInclude Include="DataLayer.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImageFactory.h" />
     <ClInclude Include="ImageManager.h" />
@@ -160,6 +161,7 @@
     <ClCompile Include="AbstractLayerFactory.cpp" />
     <ClCompile Include="ConvNet.cpp" />
     <ClCompile Include="CudaException.cpp" />
+    <ClCompile Include="DataLayer.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageFactory.cpp" />
     <ClCompile Include="ImageManager.cpp" />

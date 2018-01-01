@@ -16,7 +16,9 @@
 	      "input_feature_map":32,
 	      "output_feature_map":64,
 	      "filter_width":3,
-	      "filter_height":3
+	      "filter_height":3,
+	      "filter_weight_min_value":-1,
+	      "filter_weight_max_value":1
 	   },
 	   "Bias_Shape":{  
 	      "batch_size":1,
