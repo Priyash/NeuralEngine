@@ -85,7 +85,7 @@ void FilterDataLayer::allocate_gpu_memory(int w_size)
 	}
 }
 
-float* FilterDataLayer::copyDataToDevice()
+void FilterDataLayer::copyDataToDevice()
 {
 	
 	if (filter_weight_h != NULL)

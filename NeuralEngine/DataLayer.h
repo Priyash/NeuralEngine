@@ -11,12 +11,12 @@ class AbstractDataLayer
 protected:
 	cudaError_t status;
 public:
-	AbstractDataLayer();
-	~AbstractDataLayer();
+	AbstractDataLayer(){}
+	~AbstractDataLayer(){}
 	virtual void init_data() = 0;
 	virtual float* getHostData() = 0;
 	virtual float* getDeviceData() = 0;
-	virtual float* copyDataToDevice() = 0;
+	virtual void copyDataToDevice() = 0;
 	void check_cuda_status(cudaError_t status, string error_module);
 };
 
@@ -36,7 +36,7 @@ public:
 	void init_data();
 	float* getHostData();
 	float* getDeviceData();
-	float* copyDataToDevice();
+	void copyDataToDevice();
 
 
 private:
