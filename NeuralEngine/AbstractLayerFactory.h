@@ -76,7 +76,7 @@ private:
 	ConvShape convShape;
 	TensorShape convOutputShape;
 
-	void setShapeData(CONFIG con);
+	void setConvShapeData(CONFIG con);
 	cudnnConvolutionFwdPreference_t getConvFwdPref(int);
 };
 

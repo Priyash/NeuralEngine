@@ -65,9 +65,9 @@ ConvLayerFactory::ConvLayerFactory(const HandlerFactory& hfact, const InputLayer
 {
 	*this->handlerFact = (hfact);
 	*this->inputLayerFactory = (iFact);
-
 	//TODO: CHANGE THE UTIL FILES AND ADD JSON PARSER TO PARSE CONFIG FILE
 	Util::getInstance()->read_Json();
+
 }
 
 ConvLayerFactory::~ConvLayerFactory()
@@ -75,69 +75,67 @@ ConvLayerFactory::~ConvLayerFactory()
 
 }
 
-void ConvLayerFactory::setShapeData(CONFIG con)
-{
-	if (con == CONFIG::TENSOR_SHAPE)
-	{
-		vector<JSON_VALUE>conv_input_shape_data_list = Util::getInstance()->getValues(CONFIG::TENSOR_SHAPE);
-		convInputShape.batch_size = conv_input_shape_data_list[0].json_int_value;
-		convInputShape.feature_map = conv_input_shape_data_list[1].json_int_value;
-		convInputShape.cols = conv_input_shape_data_list[2].json_int_value;
-		convInputShape.rows = conv_input_shape_data_list[3].json_int_value;
-	}
-	else if (con == CONFIG::FILTER_SHAPE)
-	{
 
-		vector<JSON_VALUE>conv_filter_shape_data_list = Util::getInstance()->getValues(CONFIG::FILTER_SHAPE);
-		convfilterShape.n_input_feature_map = conv_filter_shape_data_list[0].json_int_value;
-		convfilterShape.n_output_feature_map = conv_filter_shape_data_list[1].json_int_value;
-		convfilterShape.filter_width = conv_filter_shape_data_list[2].json_int_value;
-		convfilterShape.filter_height = conv_filter_shape_data_list[3].json_int_value;
-	}
-	else if (con == CONFIG::CONV_SHAPE)
-	{
-		vector<JSON_VALUE>conv_shape_data_list = Util::getInstance()->getValues(CONFIG::CONV_SHAPE);
-		convShape.pad_width = conv_shape_data_list[0].json_int_value;
-		convShape.pad_height = conv_shape_data_list[1].json_int_value;
-		convShape.vertical_stride = conv_shape_data_list[2].json_int_value;
-		convShape.horizontal_stride = conv_shape_data_list[3].json_int_value;
-		convShape.dilation_height = conv_shape_data_list[4].json_int_value;
-		convShape.dilation_width = conv_shape_data_list[5].json_int_value;
-		convShape.conv_fwd_pref = conv_shape_data_list[6].json_int_value;
-	}
-	else if (con == CONFIG::TENSOR_SHAPE)
-	{
-		vector<JSON_VALUE>out_shape_data_list = Util::getInstance()->getValues(CONFIG::TENSOR_SHAPE);
-		convOutputShape.batch_size = out_shape_data_list[0].json_int_value;
-		convOutputShape.feature_map = out_shape_data_list[1].json_int_value;
-		convOutputShape.cols = out_shape_data_list[2].json_int_value;
-		convOutputShape.rows = out_shape_data_list[3].json_int_value;
-	}
+//INITIALIZE THE CONV DATA 
+void ConvLayerFactory::setConvShapeData(CONFIG con)
+{
+	//LIST OF ALL THE CONV LAYER OBJECTS
+	vector<Value::ConstMemberIterator>conv_layer_list = Util::getInstance()->getObjects(con);
+
+	//SETTING DATA FOR THE CONVOLUTION 
+	//TENSOR SHAPE DATA FOR THE INPUT TENSOR
+	vector<JSON_VALUE>conv_input_shape_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::TENSOR_SHAPE]);
+	convInputShape.batch_size = conv_input_shape_data_list[TENSOR_SHAPE_ID::TENSOR_BATCH_SIZE].json_int_value;
+	convInputShape.feature_map = conv_input_shape_data_list[TENSOR_SHAPE_ID::TENSOR_INPUT_FEATURE_MAP].json_int_value;
+	convInputShape.cols = conv_input_shape_data_list[TENSOR_SHAPE_ID::TENSOR_IMAGE_WIDTH].json_int_value;
+	convInputShape.rows = conv_input_shape_data_list[TENSOR_SHAPE_ID::TENSOR_IMAGE_HEIGHT].json_int_value;
+	
+	//FILTER SHAPE DATA FOR THE CONVOLUTION FILTER TENSOR
+	vector<JSON_VALUE>conv_filter_shape_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::FILTER_SHAPE]);
+	convfilterShape.n_input_feature_map = conv_filter_shape_data_list[FILTER_SHAPE_ID::FILTER_INPUT_FEATURE_MAP].json_int_value;
+	convfilterShape.n_output_feature_map = conv_filter_shape_data_list[FILTER_SHAPE_ID::FILTER_OUTPUT_FEATURE_MAP].json_int_value;
+	convfilterShape.filter_width = conv_filter_shape_data_list[FILTER_SHAPE_ID::FILTER_WIDTH].json_int_value;
+	convfilterShape.filter_height = conv_filter_shape_data_list[FILTER_SHAPE_ID::FILTER_HEIGHT].json_int_value;
+	
+	//CONV SHAPE DATA FOR THE CONVOLUTION TENSOR
+	vector<JSON_VALUE>conv_shape_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::CONV_SHAPE]);
+	convShape.pad_width = conv_shape_data_list[CONV_SHAPE_ID::CONV_PAD_WIDTH].json_int_value;
+	convShape.pad_height = conv_shape_data_list[CONV_SHAPE_ID::CONV_DILATION_HEIGHT].json_int_value;
+	convShape.vertical_stride = conv_shape_data_list[CONV_SHAPE_ID::CONV_VERTICAL_STRIDE].json_int_value;
+	convShape.horizontal_stride = conv_shape_data_list[CONV_SHAPE_ID::CONV_HORIZONTAL_STRIDE].json_int_value;
+	convShape.dilation_height = conv_shape_data_list[CONV_SHAPE_ID::CONV_DILATION_HEIGHT].json_int_value;
+	convShape.dilation_width = conv_shape_data_list[CONV_SHAPE_ID::CONV_DILATION_WIDTH].json_int_value;
+	convShape.conv_fwd_pref = conv_shape_data_list[CONV_SHAPE_ID::CONV_CONV_FWD_PREF].json_int_value;
+	
+	//TENSOR SHAPE DATA FOR THE CONVOLUTION OUTPUT TENSOR
+	vector<JSON_VALUE>out_shape_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::TENSOR_SHAPE]);
+	convOutputShape.batch_size = out_shape_data_list[TENSOR_SHAPE_ID::TENSOR_BATCH_SIZE].json_int_value;
+	convOutputShape.feature_map = out_shape_data_list[TENSOR_SHAPE_ID::TENSOR_INPUT_FEATURE_MAP].json_int_value;
+	convOutputShape.cols = out_shape_data_list[TENSOR_SHAPE_ID::TENSOR_IMAGE_WIDTH].json_int_value;
+	convOutputShape.rows = out_shape_data_list[TENSOR_SHAPE_ID::TENSOR_IMAGE_HEIGHT].json_int_value;
+	
 }
 
 void ConvLayerFactory::createLayer()
 {
+	setConvShapeData(CONFIG::CONVLAYER1);
 
 	//INPUT TENSOR DATA
-	setShapeData(CONFIG::TENSOR_SHAPE);
 	inputTensor = new TensorLayer(convInputShape);
 	inputTensor->createTensorDescriptor();
 	inputTensor->setTensorDescriptor();
 
 	//FILTER TENSOR DATA
-	setShapeData(CONFIG::FILTER_SHAPE);
 	filterTensor = new FilterLayer(convfilterShape);
 	filterTensor->createTensorDescriptor();
 	filterTensor->setTensorDescriptor();
 
 	//CONV TENSOR DATA
-	setShapeData(CONFIG::CONV_SHAPE);
 	convTensor = new ConvTensorLayer(convShape);
 	convTensor->createTensorDescriptor();
 	convTensor->setTensorDescriptor();
 
 	//OUTPUT TENSOR DATA
-	setShapeData(CONFIG::TENSOR_SHAPE);
 	outputTensor = new TensorLayer(convOutputShape);
 	outputTensor->createTensorDescriptor();
 	outputTensor->setTensorDescriptor();

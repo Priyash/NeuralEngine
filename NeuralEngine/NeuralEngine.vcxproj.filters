@@ -46,9 +46,6 @@
     <ClInclude Include="ConvNet.h">
       <Filter>PSNet</Filter>
     </ClInclude>
-    <ClInclude Include="AbstractDataLayer.h">
-      <Filter>Layer</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image.cpp">
@@ -75,9 +72,6 @@
     </ClCompile>
     <ClCompile Include="ConvNet.cpp">
       <Filter>PSNet</Filter>
-    </ClCompile>
-    <ClCompile Include="AbstractDataLayer.cpp">
-      <Filter>Layer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

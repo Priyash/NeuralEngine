@@ -147,7 +147,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AbstractDataLayer.h" />
     <ClInclude Include="AbstractLayerFactory.h" />
     <ClInclude Include="ConvNet.h" />
     <ClInclude Include="CudaException.h" />
@@ -158,7 +157,6 @@
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AbstractDataLayer.cpp" />
     <ClCompile Include="AbstractLayerFactory.cpp" />
     <ClCompile Include="ConvNet.cpp" />
     <ClCompile Include="CudaException.cpp" />

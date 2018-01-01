@@ -6,11 +6,9 @@ ImageFactory::ImageFactory()
 	
 	Util::getInstance()->read_Json();
 	vector<JSON_VALUE>input_list = Util::getInstance()->getValues(CONFIG::INPUT_SHAPE);
-	vector<JSON_VALUE>tensor_list = Util::getInstance()->getValues(CONFIG::TENSOR_SHAPE);
-
 	IMAGE_INPUT_PATH = input_list[0].json_str_value;
-	IMAGE_RESIZE_WIDTH = tensor_list[2].json_int_value;
-	IMAGE_RESIZE_HEIGHT = tensor_list[3].json_int_value;
+	IMAGE_RESIZE_WIDTH = input_list[2].json_int_value;
+	IMAGE_RESIZE_HEIGHT = input_list[3].json_int_value;
 
 	cout << IMAGE_INPUT_PATH << endl;
 }
