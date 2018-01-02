@@ -7,10 +7,10 @@
    },
    "ConvLayer1":{
 	   	"Tensor_Shape":{  
-	      "Batch_Size":1,
-	      "Input_Feauture_Map":32,
-	      "Image_Width":128,
-	      "Image_Height":128
+	      "batch_size":1,
+	      "input_feature_map":32,
+	      "image_width":128,
+	      "image_height":128
 	   },
 	   "FilterShape":{  
 	      "input_feature_map":32,
@@ -24,7 +24,7 @@
 	      "batch_size":1,
 	      "output_feature_map":64,
 	      "width":1,
-	      "height":1
+	      "height":1,
 	   },
 	   "Conv_Shape":{  
 	      "pad_width":1,

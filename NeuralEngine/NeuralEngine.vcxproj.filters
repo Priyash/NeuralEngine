@@ -49,6 +49,9 @@
     <ClInclude Include="DataLayer.h">
       <Filter>Layer</Filter>
     </ClInclude>
+    <ClInclude Include="AbstractDataLayerFactory.h">
+      <Filter>Layer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image.cpp">
@@ -77,6 +80,9 @@
       <Filter>PSNet</Filter>
     </ClCompile>
     <ClCompile Include="DataLayer.cpp">
+      <Filter>Layer</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractDataLayerFactory.cpp">
       <Filter>Layer</Filter>
     </ClCompile>
   </ItemGroup>

@@ -157,6 +157,9 @@ public:
 	~Bias();
 	void createTensorDescriptor();
 	void setTensorDescriptor();
+
+
+
 	cudnnTensorDescriptor_t getTensorDescriptor();
 	cudnnFilterDescriptor_t getFilterDescriptor(){ cudnnFilterDescriptor_t  filter_des; return filter_des; }
 	cudnnConvolutionDescriptor_t getConvDescriptor(){ cudnnConvolutionDescriptor_t conv_desc; return conv_desc; }
@@ -245,6 +248,8 @@ public:
 		cudnnConvolutionFwdAlgo_t conv_algo){
 		size_t s; return s;
 	}
+
+
 
 	
 };

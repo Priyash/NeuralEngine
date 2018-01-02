@@ -61,10 +61,11 @@ cublasHandle_t HandlerFactory::getCublasFactoryHandler()
 
 //================================================CONV_LAYER=======================================================================
 
-ConvLayerFactory::ConvLayerFactory(const HandlerFactory& hfact, const InputLayerFactory& iFact)
+ConvLayerFactory::ConvLayerFactory(const AbstractLayerFactory& hfact, const AbstractLayerFactory& iFact ,const AbstractDataLayerFactory& dataLayerFactory)
 {
 	*this->handlerFact = (hfact);
 	*this->inputLayerFactory = (iFact);
+	*this->DataLayer = (dataLayerFactory);
 	//TODO: CHANGE THE UTIL FILES AND ADD JSON PARSER TO PARSE CONFIG FILE
 	Util::getInstance()->read_Json();
 
@@ -89,7 +90,14 @@ void ConvLayerFactory::setConvShapeData(CONFIG con)
 	convInputShape.feature_map = conv_input_shape_data_list[TENSOR_SHAPE_ID::TENSOR_INPUT_FEATURE_MAP].json_int_value;
 	convInputShape.cols = conv_input_shape_data_list[TENSOR_SHAPE_ID::TENSOR_IMAGE_WIDTH].json_int_value;
 	convInputShape.rows = conv_input_shape_data_list[TENSOR_SHAPE_ID::TENSOR_IMAGE_HEIGHT].json_int_value;
-	
+
+	//BIAS SHAPE DATA FOR THE CONVOLUTION BIAS TENSOR
+	vector<JSON_VALUE>bias_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::BIAS_SHAPE]);
+	biasShape.batch_size = bias_data_list[BIAS_SHAPE_ID::BIAS_BATCH_SIZE].json_int_value;
+	biasShape.feature_map = bias_data_list[BIAS_SHAPE_ID::BIAS_OUTPUT_FEATURE_MAP].json_int_value;
+	biasShape.cols = bias_data_list[BIAS_SHAPE_ID::BIAS_WIDTH].json_int_value;
+	biasShape.rows = bias_data_list[BIAS_SHAPE_ID::BIAS_HEIGHT].json_int_value;
+
 	//FILTER SHAPE DATA FOR THE CONVOLUTION FILTER TENSOR
 	vector<JSON_VALUE>conv_filter_shape_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::FILTER_SHAPE]);
 	convfilterShape.n_input_feature_map = conv_filter_shape_data_list[FILTER_SHAPE_ID::FILTER_INPUT_FEATURE_MAP].json_int_value;
@@ -130,6 +138,11 @@ void ConvLayerFactory::createLayer()
 	filterTensor->createTensorDescriptor();
 	filterTensor->setTensorDescriptor();
 
+	//BIAS TENSOR DATA
+	biasTensor = new Bias(biasShape);
+	biasTensor->createTensorDescriptor();
+	biasTensor->setTensorDescriptor();
+
 	//CONV TENSOR DATA
 	convTensor = new ConvTensorLayer(convShape);
 	convTensor->createTensorDescriptor();
@@ -143,7 +156,9 @@ void ConvLayerFactory::createLayer()
 	TensorShape outImgShape = convTensor->getConvolutedImagedOutDim(convTensor->getConvDescriptor(), 
 																	inputTensor->getTensorDescriptor(), 
 																	filterTensor->getFilterDescriptor());
+
 	
+
 	cudnnConvolutionFwdAlgo_t fwd_algo = convTensor->getConvFwdAlgo(handlerFact->getCudnnFactoryHandler(), inputTensor->getTensorDescriptor(),
 																	filterTensor->getFilterDescriptor(), convTensor->getConvDescriptor(),
 																	outputTensor->getTensorDescriptor(), getConvFwdPref(convShape.conv_fwd_pref),
@@ -153,6 +168,14 @@ void ConvLayerFactory::createLayer()
 																	outputTensor->getTensorDescriptor(), fwd_algo);
 
 
+	//DataLayer->alloc_out_data_gpu(outImgShape.batch_size, outImgShape.feature_map, outImgShape.cols, outImgShape.rows);
+	//DataLayer->getResult().output_d
+
+}
+
+
+void ConvLayerFactory::forward()
+{
 
 }
 
