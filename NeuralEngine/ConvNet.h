@@ -2,12 +2,14 @@
 #define CONVNET_H
 #include"AbstractLayerFactory.h"
 
+
 class ConvNet
 {
-	AbstractLayerFactory* inputfactory;
+	AbstractLayerFactory* inputLayerfactory;
 
 public:
 	ConvNet();
+	void start(float* img_data);
 	~ConvNet();
 };
 

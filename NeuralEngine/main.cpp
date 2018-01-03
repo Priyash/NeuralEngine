@@ -3,11 +3,7 @@
 #include<cudnn.h>
 #include <cassert>
 #include <cstdlib>
-#include"CudaException.h"
 #include <cuda.h>
-
-
-
 #include"Util.h"
 
 

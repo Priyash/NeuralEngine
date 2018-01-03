@@ -3,6 +3,11 @@
 InputLayerFactory::InputLayerFactory()
 {
 	imageManager = new ImageManager();
+	batch_prefix_name = "Batch_";
+	Util::getInstance()->read_Json();
+	vector<Value::ConstMemberIterator>obj_list = Util::getInstance()->getObjects(CONFIG::CONVLAYER1);
+	vector<JSON_VALUE>input_shape_list = Util::getInstance()->getValues(obj_list[TENSOR_SHAPE]);
+	batch_size = input_shape_list[TENSOR_SHAPE_ID::TENSOR_BATCH_SIZE].json_int_value;
 }
 
 InputLayerFactory::~InputLayerFactory()
@@ -14,12 +19,29 @@ InputLayerFactory::~InputLayerFactory()
 void InputLayerFactory::createLayer()
 {
 	img_data_list = imageManager->getImageMatrices(IMAGE::RESIZE);
+	
+	for (int i = 0; i < img_data_list.size(); i++)
+	{
+		Data_Batch db;
+		if (i == batch_size - 1)
+		{
+			batch_list.push_back(db);
+			db.batch_data_list.clear();
+		}
+		else
+		{
+			db.batch_ID = batch_prefix_name + to_string(i);
+			Mat img_obj = img_data_list[i];
+			float* img_data_h = img_obj.ptr<float>(0);
+			db.batch_data_list.push_back(img_data_h);
+		}
+	}
 }
 
 
-vector<Mat>InputLayerFactory::getInputLayerData()
+vector<Data_Batch>InputLayerFactory::getInputLayerData()
 {
-	return img_data_list;
+	return batch_list;
 }
 
 //==================================================INPUT_LAYER_END===============================================================
@@ -61,12 +83,20 @@ cublasHandle_t HandlerFactory::getCublasFactoryHandler()
 
 //================================================CONV_LAYER=======================================================================
 
-ConvLayerFactory::ConvLayerFactory(const AbstractLayerFactory& hfact, const AbstractLayerFactory& iFact ,const AbstractDataLayerFactory& dataLayerFactory)
+/*ConvLayerFactory::ConvLayerFactory(const AbstractLayerFactory& hfact, const AbstractLayerFactory& iFact ,const AbstractDataLayerFactory& dataLayerFactory)
 {
 	*this->handlerFact = (hfact);
 	*this->inputLayerFactory = (iFact);
-	*this->DataLayer = (dataLayerFactory);
+	*this->dataLayerFactory = (dataLayerFactory);
 	//TODO: CHANGE THE UTIL FILES AND ADD JSON PARSER TO PARSE CONFIG FILE
+	Util::getInstance()->read_Json();
+
+}*/
+
+ConvLayerFactory::ConvLayerFactory(AbstractLayerFactory* hfact,AbstractDataLayerFactory* dataLayerFactory)
+{
+	this->handlerFact = hfact;
+	this->dataLayerFactory = dataLayerFactory;
 	Util::getInstance()->read_Json();
 
 }
@@ -167,16 +197,24 @@ void ConvLayerFactory::createLayer()
 																	filterTensor->getFilterDescriptor(), convTensor->getConvDescriptor(), 
 																	outputTensor->getTensorDescriptor(), fwd_algo);
 
-
-	//DataLayer->alloc_out_data_gpu(outImgShape.batch_size, outImgShape.feature_map, outImgShape.cols, outImgShape.rows);
-	//DataLayer->getResult().output_d
+	//INITIALIZING THE FILTER WEIGHTS WITH RANDOM DATA INCLUDING BIAS WEIGHTS
+	dataLayerFactory->init();
+	//AFTER INITIALIZING COPY THE DATA FROM CPU TO GPU 
+	dataLayerFactory->copyFilterDataToDevice();
+	dataLayerFactory->copyBiasDataToDevice();
+	//ALLOCATE THE GPU MEMORY FOR THE OUTPUT DATA FOR CONVOLUTION RESULT[output]
+	dataLayerFactory->alloc_out_data_gpu(outImgShape.batch_size, outImgShape.feature_map, outImgShape.cols, outImgShape.rows);
 
 }
 
 
 void ConvLayerFactory::forward()
 {
-
+	
+	//ADD CONVOLUTION FORWARD 
+	//convTensor->conv_forward(handlerFact->getCudnnFactoryHandler(), 1.0f, inputTensor->getTensorDescriptor(), inputLayerFactory->getInputLayerData(),
+		//filterTensor->getFilterDescriptor(),)
+	//ADD BIAS
 }
 
 cudnnConvolutionFwdPreference_t ConvLayerFactory::getConvFwdPref(int n)

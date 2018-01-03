@@ -7,6 +7,31 @@ Util::Util()
 {
 }
 
+void Util::check_cuda_status(cudnnStatus_t status, string error_module)
+{
+	if (status != CUDNN_STATUS_SUCCESS)
+	{
+		throw CudaException(status, error_module);
+	}
+	return;
+}
+void Util::check_cuda_status(cublasStatus_t status, string error_module)
+{
+	if (status != CUBLAS_STATUS_SUCCESS)
+	{
+		throw CudaException(status, error_module);
+	}
+	return;
+}
+void Util::check_cuda_status(cudaError_t status, string error_module)
+{
+	if (status != cudaSuccess)
+	{
+		throw CudaException(status, error_module);
+	}
+	return;
+}
+
 //RETURNS VALUE FOR A GIVEN OBJECT NAME
 JSON_VALUE Util::getValue(CONFIG con, string key)
 {

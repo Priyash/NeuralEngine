@@ -1,10 +1,15 @@
 #ifndef ABSTRACTLAYERFACTORY_H
 #define ABSTRACTLAYERFACTORY_H
-
-#include"Layer.h"
-#include"Util.h"
+#include"ImageManager.h"
+#include "Layer.h"
 #include"AbstractDataLayerFactory.h"
 
+
+struct Data_Batch
+{
+	string batch_ID;
+	vector<float*> batch_data_list;
+};
 
 class AbstractLayerFactory
 {
@@ -15,7 +20,7 @@ public:
 
 	virtual void createLayer() = 0;
 	virtual void forward() = 0;
-	virtual vector<Mat>getInputLayerData() = 0;
+	virtual vector<Data_Batch>getInputLayerData() = 0;
 	virtual cudnnHandle_t getCudnnFactoryHandler() = 0;
 	virtual cublasHandle_t getCublasFactoryHandler() = 0;
 	
@@ -23,16 +28,18 @@ public:
 
 class InputLayerFactory : public AbstractLayerFactory
 {
-
 	ImageManager* imageManager;
 	vector<Mat>img_data_list;
+	int batch_size;
+	vector<Data_Batch>batch_list;
+	string batch_prefix_name;
 public:
 	InputLayerFactory();
 	~InputLayerFactory();
 	void createLayer();
 
 	//ABSTRACT CLASS METHODS 
-	vector<Mat>getInputLayerData();
+	vector<Data_Batch>getInputLayerData();
 	void forward(){}
 	cudnnHandle_t getCudnnFactoryHandler(){ cudnnHandle_t s; return s; }
 	cublasHandle_t getCublasFactoryHandler(){ cublasHandle_t s; return s; }
@@ -51,7 +58,7 @@ public:
 	cublasHandle_t getCublasFactoryHandler();
 
 	//ABSTRACT CLASS METHODS 
-	vector<Mat>getInputLayerData(){ vector<Mat>list; return list; }
+	vector<Data_Batch>getInputLayerData(){ vector<Data_Batch>list; return list; }
 	void forward(){}
 };
 
@@ -66,16 +73,16 @@ class ConvLayerFactory : public AbstractLayerFactory
 	
 	//LAYER FACTORY HANDLER
 	AbstractLayerFactory* handlerFact;
-	AbstractLayerFactory* inputLayerFactory;
-	AbstractDataLayerFactory* DataLayer;
+	AbstractDataLayerFactory* dataLayerFactory;
 public:
-	ConvLayerFactory(const AbstractLayerFactory&, const AbstractLayerFactory&, const AbstractDataLayerFactory&);
+	//ConvLayerFactory(AbstractLayerFactory&,AbstractLayerFactory&, const AbstractDataLayerFactory&);
+	ConvLayerFactory(AbstractLayerFactory* hfact, AbstractDataLayerFactory* dataLayerFactory);
 	~ConvLayerFactory();
 	void createLayer();
-	void forward(AbstractDataLayerFactory*);
+	void forward();
 
 	//ABSTRACT CLASS METHODS 
-	vector<Mat>getInputLayerData(){ vector<Mat>list; return list; }
+	vector<Data_Batch>getInputLayerData(){ vector<Data_Batch>list; return list; }
 	cudnnHandle_t getCudnnFactoryHandler(){ cudnnHandle_t s; return s; }
 	cublasHandle_t getCublasFactoryHandler(){ cublasHandle_t s; return s; }
 

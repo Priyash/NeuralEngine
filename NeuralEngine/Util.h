@@ -10,6 +10,7 @@
 #include "rapidjson\stringbuffer.h"
 #include <fstream>
 #include <rapidjson/istreamwrapper.h>
+#include"CudaException.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -86,6 +87,9 @@ public:
 	vector<JSON_VALUE> getValues(CONFIG con);
 	vector<Value::ConstMemberIterator>getObjects(CONFIG con);
 	vector<JSON_VALUE> getValues(Value::ConstMemberIterator);
+	void check_cuda_status(cudnnStatus_t status, string error_module);
+	void check_cuda_status(cublasStatus_t status, string error_module);
+	void check_cuda_status(cudaError_t status, string error_module);
 private:
 	string toStr(CONFIG con);
 	

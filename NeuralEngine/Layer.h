@@ -2,8 +2,7 @@
 #define LAYER_H
 #include<cudnn.h>
 #include<iostream>
-#include"CudaException.h"
-#include"ImageManager.h"
+#include"Util.h"
 #include<cublas_v2.h>
 
 using namespace std;
@@ -60,9 +59,6 @@ public:
 	virtual cudnnConvolutionDescriptor_t getConvDescriptor() = 0;
 	virtual TensorShape getConvolutedImagedOutDim(cudnnConvolutionDescriptor_t conDesc, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filterDesc) = 0;
 
-	void check_cuda_status(cudnnStatus_t status, string error_module);
-	void check_cuda_status(cublasStatus_t status, string error_module);
-
 	virtual void createCudnnHandler() = 0;
 	virtual void createCublasHandler() = 0;
 	virtual cudnnHandle_t getCudnnHandler() = 0;
@@ -75,6 +71,15 @@ public:
 	virtual size_t getConvForwardWorkSpacesize(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
 		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,
 		cudnnConvolutionFwdAlgo_t conv_algo) = 0;
+
+	//CONVOLUTION PROCESS
+	virtual void conv_forward(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t inDesc, float* d_input, cudnnFilterDescriptor_t filDesc,
+		float* d_filter, cudnnConvolutionDescriptor_t convDesc, cudnnConvolutionFwdAlgo_t conv_algo, void* workspace,
+		size_t workspace_byte, const float beta, cudnnTensorDescriptor_t outDesc, float* d_output) = 0;
+	//BIAS DATA AFTER CONVOLUTION
+	virtual void addBias(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t biasDesc, float* bias_d,
+		const float beta, cudnnTensorDescriptor_t convDstDesc, float* conDstDesc_d) = 0;
+
 };
 
 
@@ -109,6 +114,15 @@ public:
 		cudnnConvolutionFwdAlgo_t conv_algo){
 		size_t s; return s;
 	}
+
+	//CONVOLUTION PROCESS
+	void conv_forward(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t inDesc, float* d_input, cudnnFilterDescriptor_t filDesc,
+		float* d_filter, cudnnConvolutionDescriptor_t convDesc, cudnnConvolutionFwdAlgo_t conv_algo, void* workspace,
+		size_t workspace_byte, const float beta, cudnnTensorDescriptor_t outDesc, float* d_output){}
+	//BIAS DATA AFTER CONVOLUTION
+	void addBias(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t biasDesc, float* bias_d,
+		const float beta, cudnnTensorDescriptor_t convDstDesc, float* conDstDesc_d){}
+
 };
 
 
@@ -131,8 +145,10 @@ public:
 
 	void createCudnnHandler(){}
 	void createCublasHandler(){}
+
 	cudnnHandle_t getCudnnHandler(){ return cudnnHandler; }
 	cublasHandle_t getCublasHandler(){ return cublasHandler; }
+	
 	cudnnConvolutionFwdAlgo_t getConvFwdAlgo(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
 		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,
 		cudnnConvolutionFwdPreference_t convFwdPref, size_t mem_limit_bytes
@@ -144,6 +160,15 @@ public:
 		cudnnConvolutionFwdAlgo_t conv_algo){
 		size_t s; return s;
 	}
+
+	//CONVOLUTION PROCESS
+	void conv_forward(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t inDesc, float* d_input, cudnnFilterDescriptor_t filDesc,
+		float* d_filter, cudnnConvolutionDescriptor_t convDesc, cudnnConvolutionFwdAlgo_t conv_algo, void* workspace,
+		size_t workspace_byte, const float beta, cudnnTensorDescriptor_t outDesc, float* d_output){}
+	//BIAS DATA AFTER CONVOLUTION
+	void addBias(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t biasDesc,
+		float* bias_d, const float beta, cudnnTensorDescriptor_t convDstDesc, float* conDstDesc_d){}
+
 };
 
 
@@ -168,8 +193,10 @@ public:
 
 	void createCudnnHandler(){}
 	void createCublasHandler(){}
+
 	cudnnHandle_t getCudnnHandler(){ return cudnnHandler; }
 	cublasHandle_t getCublasHandler(){ return cublasHandler; }
+	
 	cudnnConvolutionFwdAlgo_t getConvFwdAlgo(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
 		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,
 		cudnnConvolutionFwdPreference_t convFwdPref, size_t mem_limit_bytes
@@ -181,6 +208,14 @@ public:
 		cudnnConvolutionFwdAlgo_t conv_algo){
 		size_t s; return s;
 	}
+	//CONVOLUTION PROCESS
+	void conv_forward(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t inDesc, float* d_input, cudnnFilterDescriptor_t filDesc,
+		float* d_filter, cudnnConvolutionDescriptor_t convDesc, cudnnConvolutionFwdAlgo_t conv_algo, void* workspace,
+		size_t workspace_byte, const float beta, cudnnTensorDescriptor_t outDesc, float* d_output){}
+	//BIAS DATA AFTER CONVOLUTION
+	void addBias(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t biasDesc, float* bias_d,
+		const float beta, cudnnTensorDescriptor_t convDstDesc, float* conDstDesc_d){}
+
 
 };
 
@@ -203,16 +238,28 @@ public:
 	//CONVOLUTION RELATED METHODS
 	void createCudnnHandler(){}
 	void createCublasHandler(){}
+	
 	cudnnHandle_t getCudnnHandler(){ return cudnnHandler; }
 	cublasHandle_t getCublasHandler(){ return cublasHandler; }
+
 	TensorShape getConvolutedImagedOutDim(cudnnConvolutionDescriptor_t conDesc, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filterDesc);
 
+	//FUNTION FOR ALGORITHM AVAILABLE AT THE TIME CONVOLUTION BASED ON HARDWARE AND MEMORY LIMIT
 	cudnnConvolutionFwdAlgo_t getConvFwdAlgo(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc,
 		cudnnConvolutionDescriptor_t convDesc, cudnnTensorDescriptor_t outDesc,cudnnConvolutionFwdPreference_t convFwdPref,
 		size_t mem_limit_bytes);
 
+	//REQUIRED SIZES FOR CONVOLUTION TO RUN ON DATASET
 	size_t getConvForwardWorkSpacesize(cudnnHandle_t cudnn, cudnnTensorDescriptor_t inDesc, cudnnFilterDescriptor_t filDesc, cudnnConvolutionDescriptor_t convDesc,
 		cudnnTensorDescriptor_t outDesc, cudnnConvolutionFwdAlgo_t conv_algo);
+
+	//CONVOLUTION PROCESS
+	void conv_forward(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t inDesc, float* d_input, cudnnFilterDescriptor_t filDesc,
+		float* d_filter, cudnnConvolutionDescriptor_t convDesc, cudnnConvolutionFwdAlgo_t conv_algo,void* workspace,
+		size_t workspace_byte, const float beta, cudnnTensorDescriptor_t outDesc,float* d_output);
+	//BIAS DATA AFTER CONVOLUTION
+	void addBias(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t biasDesc, float* bias_d, const float beta, cudnnTensorDescriptor_t convDstDesc,float* conDstDesc_d);
+	
 
 };
 
@@ -234,6 +281,7 @@ public:
 
 	void createCudnnHandler();
 	void createCublasHandler();
+
 	cudnnHandle_t getCudnnHandler();
 	cublasHandle_t getCublasHandler();
 
@@ -250,6 +298,13 @@ public:
 	}
 
 
+	//CONVOLUTION PROCESS
+	void conv_forward(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t inDesc, float* d_input, cudnnFilterDescriptor_t filDesc,
+		float* d_filter, cudnnConvolutionDescriptor_t convDesc, cudnnConvolutionFwdAlgo_t conv_algo, void* workspace,
+		size_t workspace_byte, const float beta, cudnnTensorDescriptor_t outDesc, float* d_output){}
+	//BIAS DATA AFTER CONVOLUTION
+	void addBias(cudnnHandle_t cudnn, const float alpha, cudnnTensorDescriptor_t biasDesc, float* bias_d, const float beta, 
+		cudnnTensorDescriptor_t convDstDesc, float* conDstDesc_d){}
 
 	
 };
