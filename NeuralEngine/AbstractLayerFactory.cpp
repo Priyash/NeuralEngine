@@ -197,13 +197,33 @@ void ConvLayerFactory::createLayer()
 																	filterTensor->getFilterDescriptor(), convTensor->getConvDescriptor(), 
 																	outputTensor->getTensorDescriptor(), fwd_algo);
 
-	//INITIALIZING THE FILTER WEIGHTS WITH RANDOM DATA INCLUDING BIAS WEIGHTS
-	dataLayerFactory->init();
-	//AFTER INITIALIZING COPY THE DATA FROM CPU TO GPU 
-	dataLayerFactory->copyFilterDataToDevice();
-	dataLayerFactory->copyBiasDataToDevice();
-	//ALLOCATE THE GPU MEMORY FOR THE OUTPUT DATA FOR CONVOLUTION RESULT[output]
-	dataLayerFactory->alloc_out_data_gpu(outImgShape.batch_size, outImgShape.feature_map, outImgShape.cols, outImgShape.rows);
+	//SRC DATA GPU ALLOCATIONS
+	dataLayerFactory->allocate_data_to_device(DATA_LAYER_ID::SRC);
+	//SRC DATA COPY TO GPU 
+	dataLayerFactory->copyDataToDevice(DATA_LAYER_ID::SRC);
+
+
+	//CALCULATING THE SIZE FOR DATA ALLOCATION IN CPU
+	dataLayerFactory->compute_size(DATA_LAYER_ID::FILTER);
+	dataLayerFactory->compute_size(DATA_LAYER_ID::BIAS);
+	//ALLOCATE DATA TO HOST
+	dataLayerFactory->allocate_data_to_host(DATA_LAYER_ID::FILTER);
+	dataLayerFactory->allocate_data_to_host(DATA_LAYER_ID::BIAS);
+	//INITIALIZING THE DATA WITH UNIFORM RANDOM DISTRIBUTION
+	dataLayerFactory->Init(DATA_LAYER_ID::FILTER);
+	dataLayerFactory->Init(DATA_LAYER_ID::BIAS);
+	//GPU ALLOCATIONS
+	dataLayerFactory->allocate_data_to_device(DATA_LAYER_ID::FILTER);
+	dataLayerFactory->allocate_data_to_device(DATA_LAYER_ID::BIAS);
+	//COPY THE DATA TO DEVICE[GPU]
+	dataLayerFactory->copyDataToDevice(DATA_LAYER_ID::FILTER);
+	dataLayerFactory->copyDataToDevice(DATA_LAYER_ID::BIAS);
+
+	//DST DATA COMPUTE SIZE
+	dataLayerFactory->compute_dst_size(outImgShape.batch_size, outImgShape.feature_map, outImgShape.cols, outImgShape.rows);
+	//DST ALLOCATE DATA TO HOST
+	dataLayerFactory->allocate_data_to_host(DATA_LAYER_ID::DST);
+
 
 }
 
@@ -215,6 +235,9 @@ void ConvLayerFactory::forward()
 	//convTensor->conv_forward(handlerFact->getCudnnFactoryHandler(), 1.0f, inputTensor->getTensorDescriptor(), inputLayerFactory->getInputLayerData(),
 		//filterTensor->getFilterDescriptor(),)
 	//ADD BIAS
+	float* result;
+	dataLayerFactory->Init_dst_data(result);
+	dataLayerFactory->copyDataToHost(DATA_LAYER_ID::DST);
 }
 
 cudnnConvolutionFwdPreference_t ConvLayerFactory::getConvFwdPref(int n)

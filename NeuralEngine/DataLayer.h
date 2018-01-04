@@ -20,77 +20,150 @@ protected:
 public:
 	AbstractDataLayer(){}
 	~AbstractDataLayer(){}
-	virtual void init_data() = 0;
-	virtual void set_src_data(float* src_data) = 0;
-	virtual void init_data(float* filter_data, float* bias_data) = 0;
-	virtual void alloc_out_data_gpu(int batch, int out_feature_map, int w, int h) = 0;
-	virtual float* getSrcDataHost() = 0;
-	virtual float* getSrcDataDevice() = 0;
-	virtual vector<float*> getHostData() = 0;
-	virtual vector<float*> getDeviceData() = 0;
 
-	virtual void copySrcsDataToDevice() = 0;
+	//COMPUTE DATA SIZES FOR HOST AND DEVICES,READ ATTRIBUTES FROM JSON CONFIG FILE
+	virtual void compute_src_data_size() = 0;
+	virtual void compute_filter_data_size() = 0;
+	virtual void compute_bias_data_size() = 0;
+	virtual void compute_dst_data_size(int batch,int out_feature_map,int width,int height) = 0;
+
+
+	//DATA ALLOCATION TO GPU[CUDAMALLOC]
+	virtual void alloc_src_data_to_device() = 0;
+	virtual void alloc_filter_data_to_device() = 0;
+	virtual void alloc_bias_data_to_device() = 0;
+	virtual void alloc_dst_data_to_device() = 0;
+
+	//DATA ALLOCATION TO CPU[NEW]
+	virtual void alloc_src_data_to_host() = 0;
+	virtual void alloc_filter_data_to_host() = 0;
+	virtual void alloc_bias_data_to_host() = 0;
+	virtual void alloc_dst_data_to_host() = 0;
+
+	//INITIALIZE DATAs
+	virtual void init_filter_data() = 0;
+	virtual void init_bias_data() = 0;
+	virtual void init_dst_data(float* dst_data) = 0;
+
+	//DEVICE DATA POINTERS
+	virtual float* get_src_data_d() = 0;
+	virtual float* get_filter_data_d() = 0;
+	virtual float* get_bias_data_d() = 0;
+	virtual float* get_dst_data_d() = 0;
+
+	//HOST DATA POINTERS
+	virtual float* get_src_data_h() = 0;
+	virtual float* get_filter_data_h() = 0;
+	virtual float* get_bias_data_h() = 0;
+	virtual float* get_dst_data_h() = 0;
+
+	//COPY DATA FROM HOST TO DEVICE
+	virtual void copySrcDataToDevice() = 0;
 	virtual void copyFilterDataToDevice() = 0;
 	virtual void copyBiasDataToDevice() = 0;
+	virtual void copyDstDataToDevice() = 0;
 
+	//COPY DATA BACK FROM DEVICE TO HOST
 	virtual void copySrcDataToHost() = 0;
 	virtual void copyFilterDataToHost() = 0;
 	virtual void copyBiasDataToHost() = 0;
-	virtual DataLayerResult getResult() = 0;
+	virtual void copyDstDataToHost() = 0;
 };
 
 
 class DataLayer : public AbstractDataLayer
 {
-	//SRC DATA
-	float* src_data;
-	float* src_data_d;
-	int src_data_size;
 
-	//FILTER DATA
-	float* filter_weight_h;
-	float* filter_weight_d;
-	int w_size;
+	// SRC DATA VARIABLES
+	float* src_data_h;
+	float* src_data_d;
+
+	//FILTER DATA VARIABLES
+	float* filter_data_h;
+	float* filter_data_d;
 	int filter_weight_min_value;
 	int filter_weight_max_value;
+	int filter_in_feature_map;
+	int filter_out_feature_map;
+	int filter_width;
+	int filter_height;
 
-	//BIAS DATA
-	float* bias_weight_h;
-	float* bias_weight_d;
-	int b_size;
-	int b_weight_min_value;
-	int b_weight_max_value;
+	//BIAS DATA VARIABLES
+	float* bias_data_h;
+	float* bias_data_d;
+	int bias_out_feature_map;
 
-	//OUPUT DATA
-	DataLayerResult result;
+	//DST DATA VARIABLES
+	float* dst_data_h;
+	float* dst_data_d;
+	int dst_batch;
+	int dst_out_feature_map;
+	int dst_width;
+	int dst_height;
+
+	//DATA SIZES VARIABLE
+	int src_data_size;
+	int filter_data_size;
+	int bias_data_size;
+	int dst_data_size;
+
+
+	
 
 public:
-	DataLayer();
+	DataLayer(float* src_data);
 	~DataLayer();
-	void init_data();
-	void set_src_data(float* src_data);
-	void init_data(float* filter_data, float* bias_data);
-	void alloc_out_data_gpu(int batch, int out_feature_map, int w, int h);
-	float* getSrcDataHost();
-	float* getSrcDataDevice();
-	vector<float*> getHostData();
-	vector<float*> getDeviceData();
-	void copySrcsDataToDevice();
+
+	//COMPUTE DATA SIZES FOR HOST AND DEVICES,READ ATTRIBUTES FROM JSON CONFIG FILE
+	void compute_src_data_size();
+	void compute_filter_data_size();
+	void compute_bias_data_size();
+	void compute_dst_data_size(int batch, int out_feature_map, int width, int height);
+
+
+	//DATA ALLOCATION TO GPU[CUDAMALLOC]
+	void alloc_src_data_to_device();
+	void alloc_filter_data_to_device();
+	void alloc_bias_data_to_device();
+	void alloc_dst_data_to_device();
+
+	//DATA ALLOCATION TO CPU[NEW]
+	void alloc_src_data_to_host();
+	void alloc_filter_data_to_host();
+	void alloc_bias_data_to_host();
+	void alloc_dst_data_to_host();
+
+	//INITIALIZE DATAs
+	void init_filter_data();
+	void init_bias_data();
+	void init_dst_data(float* dst_data);
+
+	//DEVICE DATA POINTERS
+	float* get_src_data_d();
+	float* get_filter_data_d();
+	float* get_bias_data_d();
+	float* get_dst_data_d();
+
+	//HOST DATA POINTERS
+	float* get_src_data_h();
+	float* get_filter_data_h();
+	float* get_bias_data_h();
+	float* get_dst_data_h();
+
+	//COPY DATA FROM HOST TO DEVICE
+	void copySrcDataToDevice();
 	void copyFilterDataToDevice();
 	void copyBiasDataToDevice();
+	void copyDstDataToDevice();
 
-	void copySrcDataToHost(){}
-	void copyFilterDataToHost(){}
-	void copyBiasDataToHost(){}
-	DataLayerResult getResult();
+	//COPY DATA BACK FROM DEVICE TO HOST
+	void copySrcDataToHost();
+	void copyFilterDataToHost();
+	void copyBiasDataToHost();
+	void copyDstDataToHost();
+
 private:
-	void compute_src_data_size();
-	void compute_filter_size();
-	void compute_bias_size();
 	double gen_random_number();
-	void allocate_gpu_src_data_memory(int src_size);
-	void allocate_gpu_filter_weight_memory(int w_size);
-	void allocate_gpu_bias_weight_memory(int b_size);
 };
 
 

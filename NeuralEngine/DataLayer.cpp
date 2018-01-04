@@ -1,79 +1,17 @@
 #include "DataLayer.h"
 
 
-DataLayer::DataLayer()
+DataLayer::DataLayer(float* src_data)
 {
-	filter_weight_d = NULL;
-	bias_weight_d = NULL;
-	src_data_d = NULL;
-
-	compute_filter_size();
-	compute_bias_size();
+	this->src_data_h = src_data_h;
+	Util::getInstance()->read_Json();
 }
-
 
 DataLayer::~DataLayer()
 {
 
 }
 
-
-void DataLayer::init_data()
-{
-	
-	for (int i = 0; i < w_size; i++)
-	{
-		filter_weight_h[i] = gen_random_number();
-	}
-
-	for (int i = 0; i < b_size; i++)
-	{
-		bias_weight_h[i] = gen_random_number();
-	}
-
-}
-
-void DataLayer::init_data(float* filter_data, float* bias_data)
-{
-	filter_weight_h = filter_data;
-	bias_weight_h = bias_data;
-}
-
-void DataLayer::set_src_data(float* src_data)
-{
-	this->src_data = src_data;
-	compute_src_data_size();
-}
-
-
-vector<float*> DataLayer::getHostData()
-{
-	vector<float*>weight_list_h;
-	weight_list_h.push_back(filter_weight_h);
-	weight_list_h.push_back(bias_weight_h);
-
-	return weight_list_h;
-}
-
-vector<float*>  DataLayer::getDeviceData()
-{
-	vector<float*>weight_list_d;
-	weight_list_d.push_back(filter_weight_d);
-	weight_list_d.push_back(bias_weight_d);
-
-	return weight_list_d;
-}
-
-
-float* DataLayer::getSrcDataHost()
-{
-	return src_data;
-}
-
-float* DataLayer::getSrcDataDevice()
-{
-	return src_data_d;
-}
 
 double DataLayer::gen_random_number()
 {
@@ -84,131 +22,194 @@ double DataLayer::gen_random_number()
 	return dis(gen);
 }
 
-DataLayerResult DataLayer::getResult()
-{
-	return result;
-}
-
-
-
 void DataLayer::compute_src_data_size()
 {
-	Util::getInstance()->read_Json();
-	vector<Value::ConstMemberIterator>conv_layer_list = Util::getInstance()->getObjects(CONFIG::CONVLAYER1);
-	vector<JSON_VALUE>input_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::TENSOR_SHAPE]);
-	int batch_size = input_data_list[TENSOR_SHAPE_ID::TENSOR_BATCH_SIZE].json_int_value;
-	int input_feature_map = input_data_list[TENSOR_SHAPE_ID::TENSOR_INPUT_FEATURE_MAP].json_int_value;
-	int width = input_data_list[TENSOR_SHAPE_ID::TENSOR_IMAGE_WIDTH].json_int_value;
-	int height = input_data_list[TENSOR_SHAPE_ID::TENSOR_IMAGE_HEIGHT].json_int_value;
-
-	src_data_size = batch_size*input_feature_map*width*height;
-	allocate_gpu_src_data_memory(src_data_size);
+	//ALREADY ALLOCATED	
 }
 
-void DataLayer::compute_filter_size()
+void DataLayer::compute_filter_data_size()
 {
-	//FETCHING THE FILTER DATA FROM CONFIG FILE
-	Util::getInstance()->read_Json();
+	//READING DATA FROM CONFIG FILE FOR THE FILTERS
 	vector<Value::ConstMemberIterator>conv_layer_list = Util::getInstance()->getObjects(CONFIG::CONVLAYER1);
 	vector<JSON_VALUE>filter_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::FILTER_SHAPE]);
-	int in_feature_map = filter_data_list[FILTER_SHAPE_ID::FILTER_INPUT_FEATURE_MAP].json_int_value;
-	int out_feature_map = filter_data_list[FILTER_SHAPE_ID::FILTER_OUTPUT_FEATURE_MAP].json_int_value;
-	int filter_width = filter_data_list[FILTER_SHAPE_ID::FILTER_WIDTH].json_int_value;
-	int filter_height = filter_data_list[FILTER_SHAPE_ID::FILTER_HEIGHT].json_int_value;
+	filter_in_feature_map = filter_data_list[FILTER_SHAPE_ID::FILTER_INPUT_FEATURE_MAP].json_int_value;
+	filter_out_feature_map = filter_data_list[FILTER_SHAPE_ID::FILTER_OUTPUT_FEATURE_MAP].json_int_value;
+	filter_width = filter_data_list[FILTER_SHAPE_ID::FILTER_WIDTH].json_int_value;
+	filter_height = filter_data_list[FILTER_SHAPE_ID::FILTER_HEIGHT].json_int_value;
 	filter_weight_min_value = filter_data_list[FILTER_SHAPE_ID::FILTER_WEIGHT_MIN_VALUE].json_int_value;
 	filter_weight_max_value = filter_data_list[FILTER_SHAPE_ID::FILTER_WEIGHT_MAX_VALUE].json_int_value;
-
-	//ALLOCATING CPU MEMORY FOR FILTER WEIGHTS
-	w_size = in_feature_map*out_feature_map*filter_width*filter_height;
-	filter_weight_h = new float[w_size];
-	//ALLOCATING GPU MEMORY FOR FILTER WEIGHTS
-	allocate_gpu_filter_weight_memory(w_size);
-	
+	filter_data_size = filter_in_feature_map*filter_out_feature_map*filter_width*filter_height;
 }
 
-void DataLayer::compute_bias_size()
+void DataLayer::compute_bias_data_size()
 {
-	//FETCHING THE FILTER DATA FROM CONFIG FILE
-	Util::getInstance()->read_Json();
+
+	//READING DATA FROM CONFIG FILE FOR THE BIAS
 	vector<Value::ConstMemberIterator>conv_layer_list = Util::getInstance()->getObjects(CONFIG::CONVLAYER1);
 	vector<JSON_VALUE>bias_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::BIAS_SHAPE]);
-	int out_feature_map = bias_data_list[FILTER_SHAPE_ID::FILTER_OUTPUT_FEATURE_MAP].json_int_value;
-	int filter_width = bias_data_list[FILTER_SHAPE_ID::FILTER_WIDTH].json_int_value;
-	int filter_height = bias_data_list[FILTER_SHAPE_ID::FILTER_HEIGHT].json_int_value;
-	
+	bias_out_feature_map = bias_data_list[BIAS_SHAPE_ID::BIAS_OUTPUT_FEATURE_MAP].json_int_value;
+	bias_data_size = bias_out_feature_map;
+}
 
+void DataLayer::compute_dst_data_size(int batch, int out_feature_map, int width, int height)
+{
+	this->dst_batch = batch;
+	this->dst_out_feature_map = out_feature_map;
+	this->dst_width = width;
+	this->dst_height = height;
+
+	dst_data_size = dst_batch*dst_out_feature_map*dst_width*dst_height;
+}
+
+
+void DataLayer::alloc_src_data_to_device()
+{
+	try
+	{
+		status = cudaMalloc(&src_data_d, src_data_size*sizeof(float));
+		Util::getInstance()->check_cuda_status(status , "cudaMalloc_src_data");
+	}
+	catch (CudaException& ce)
+	{
+		cout << ce.what() << endl;
+	}
+}
+
+void DataLayer::alloc_filter_data_to_device()
+{
+	try
+	{
+		status = cudaMalloc(&filter_data_d, filter_data_size*sizeof(float));
+		Util::getInstance()->check_cuda_status(status, "cudaMalloc_filter_data");
+	}
+	catch (CudaException& ce)
+	{
+		cout << ce.what() << endl;
+	}
+}
+
+void DataLayer::alloc_bias_data_to_device()
+{
+	try
+	{
+		status = cudaMalloc(&bias_data_d, bias_data_size*sizeof(float));
+		Util::getInstance()->check_cuda_status(status, "cudaMalloc_bias_data");
+	}
+	catch (CudaException& ce)
+	{
+		cout << ce.what() << endl;
+	}
+}
+
+
+void DataLayer::alloc_dst_data_to_device()
+{
+	try
+	{
+		status = cudaMalloc(&dst_data_d, dst_data_size*sizeof(float));
+		Util::getInstance()->check_cuda_status(status, "cudaMalloc_dst_data");
+	}
+	catch (CudaException& ce)
+	{
+		cout << ce.what() << endl;
+	}
+}
+
+
+
+void DataLayer::alloc_src_data_to_host()
+{
+
+}
+
+void DataLayer::alloc_filter_data_to_host()
+{
 	//ALLOCATING CPU MEMORY FOR FILTER WEIGHTS
-	b_size = out_feature_map;
-	bias_weight_h = new float[b_size];
-	//ALLOCATING GPU MEMORY FOR FILTER WEIGHTS
-	allocate_gpu_bias_weight_memory(b_size);
+	filter_data_h = new float[filter_data_size];
+}
 
+void DataLayer::alloc_bias_data_to_host()
+{
+	//ALLOCATING CPU MEMORY FOR BIAS WEIGHTS
+	bias_data_h = new float[bias_data_size];
+}
+
+void DataLayer::alloc_dst_data_to_host()
+{
+	//ALLOCATING CPU MEMORY FOR DST DATA 
+	dst_data_h = new float[dst_data_size];
 }
 
 
-void DataLayer::allocate_gpu_src_data_memory(int src_size)
+//INITIALIZE DATAs
+void DataLayer::init_filter_data()
 {
-	try
+	for (int i = 0; i < filter_data_size; i++)
 	{
-		status = cudaMalloc(&src_data, src_size*sizeof(float));
-		Util::getInstance()->check_cuda_status(status, "cudaMalloc_src_data");
-	}
-	catch (CudaException& ce)
-	{
-		cout << ce.what() << endl;
-	}
-
-}
-
-void DataLayer::allocate_gpu_filter_weight_memory(int w_size)
-{
-	try
-	{
-		status = cudaMalloc(&filter_weight_d, w_size*sizeof(float));
-		Util::getInstance()->check_cuda_status(status, "cudaMalloc_filter_weights");
-	}
-	catch (CudaException& ce)
-	{
-		cout << ce.what() << endl;
+		filter_data_h[i] = gen_random_number();
 	}
 }
 
-void DataLayer::allocate_gpu_bias_weight_memory(int b_size)
+void DataLayer::init_bias_data()
 {
-	try
+	for (int i = 0; i < bias_data_size; i++)
 	{
-		status = cudaMalloc(&bias_weight_d, b_size*sizeof(float));
-		Util::getInstance()->check_cuda_status(status, "cudaMalloc_bias_weights");
-	}
-	catch (CudaException& ce)
-	{
-		cout << ce.what() << endl;
-	}
-}
-
-void DataLayer::alloc_out_data_gpu(int batch, int out_feature_map, int w, int h)
-{
-	int o_size = batch*out_feature_map*w*h;
-	DataLayerResult result;
-	try
-	{
-		status = cudaMalloc(&result.output_d, o_size*sizeof(float));
-		Util::getInstance()->check_cuda_status(status, "cudaMalloc_out_result");
-	}
-	catch (CudaException& ce)
-	{
-		cout << ce.what() << endl;
+		bias_data_h[i] = gen_random_number();
 	}
 }
 
 
-void DataLayer::copySrcsDataToDevice()
+void DataLayer::init_dst_data(float* dst_data)
 {
-	if (src_data != NULL)
+	this->dst_data_d = dst_data;
+}
+
+
+//DEVICE DATA POINTERS
+float* DataLayer::get_src_data_d()
+{
+	return src_data_d;
+}
+float* DataLayer::get_filter_data_d()
+{
+	return filter_data_d;
+}
+float* DataLayer::get_bias_data_d()
+{
+	return bias_data_d;
+}
+float* DataLayer::get_dst_data_d()
+{
+	return dst_data_d;
+}
+
+//HOST DATA POINTERS
+float* DataLayer::get_src_data_h()
+{
+	return src_data_h;
+}
+float* DataLayer::get_filter_data_h()
+{
+	return filter_data_h;
+}
+float* DataLayer::get_bias_data_h()
+{
+	return bias_data_h;
+}
+float* DataLayer::get_dst_data_h()
+{
+	return dst_data_h;
+}
+
+
+//COPY DATA FROM HOST TO DEVICE
+void DataLayer::copySrcDataToDevice()
+{
+	if (src_data_h != NULL)
 	{
 		try
 		{
-			status = cudaMemcpy(src_data_d, src_data, src_data_size*sizeof(float), cudaMemcpyHostToDevice);
+			status = cudaMemcpy(src_data_d, src_data_h, src_data_size*sizeof(float), cudaMemcpyHostToDevice);
 			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_src_data");
 		}
 		catch (CudaException& ce)
@@ -218,15 +219,14 @@ void DataLayer::copySrcsDataToDevice()
 	}
 }
 
-
 void DataLayer::copyFilterDataToDevice()
 {
-	if (filter_weight_h != NULL)
+	if (filter_data_h != NULL)
 	{
 		try
 		{
-			status = cudaMemcpy(filter_weight_d, filter_weight_h, w_size*sizeof(float), cudaMemcpyHostToDevice);
-			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_filter_weights");
+			status = cudaMemcpy(filter_data_d, filter_data_h, filter_data_size*sizeof(float), cudaMemcpyHostToDevice);
+			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_filter_data");
 		}
 		catch (CudaException& ce)
 		{
@@ -234,16 +234,15 @@ void DataLayer::copyFilterDataToDevice()
 		}
 	}
 }
-
 
 void DataLayer::copyBiasDataToDevice()
 {
-	if (bias_weight_h != NULL)
+	if (bias_data_h != NULL)
 	{
 		try
 		{
-			status = cudaMemcpy(bias_weight_d, bias_weight_h, b_size*sizeof(float), cudaMemcpyHostToDevice);
-			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_bias_weights");
+			status = cudaMemcpy(bias_data_d, bias_data_h, bias_data_size*sizeof(float), cudaMemcpyHostToDevice);
+			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_bias_data");
 		}
 		catch (CudaException& ce)
 		{
@@ -252,3 +251,81 @@ void DataLayer::copyBiasDataToDevice()
 	}
 }
 
+void DataLayer::copyDstDataToDevice()
+{
+	if (dst_data_h != NULL)
+	{
+		try
+		{
+			status = cudaMemcpy(dst_data_d, dst_data_h, dst_data_size*sizeof(float), cudaMemcpyHostToDevice);
+			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_dst_data");
+		}
+		catch (CudaException& ce)
+		{
+			cout << ce.what() << endl;
+		}
+	}
+}
+
+
+//COPY DATA BACK FROM DEVICE TO HOST
+void DataLayer::copySrcDataToHost()
+{
+	if (src_data_d != NULL)
+	{
+		try
+		{
+			status = cudaMemcpy(src_data_h, src_data_d, dst_data_size*sizeof(float), cudaMemcpyDeviceToHost);
+			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_src_data_host");
+		}
+		catch (CudaException& ce)
+		{
+			cout << ce.what() << endl;
+		}
+	}
+}
+void DataLayer::copyFilterDataToHost()
+{
+	if (filter_data_d != NULL)
+	{
+		try
+		{
+			status = cudaMemcpy(filter_data_h, filter_data_d, filter_data_size*sizeof(float), cudaMemcpyDeviceToHost);
+			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_filter_data_host");
+		}
+		catch (CudaException& ce)
+		{
+			cout << ce.what() << endl;
+		}
+	}
+}
+void DataLayer::copyBiasDataToHost()
+{
+	if (bias_data_d != NULL)
+	{
+		try
+		{
+			status = cudaMemcpy(bias_data_h, bias_data_d, bias_data_size*sizeof(float), cudaMemcpyDeviceToHost);
+			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_bias_data_host");
+		}
+		catch (CudaException& ce)
+		{
+			cout << ce.what() << endl;
+		}
+	}
+}
+void DataLayer::copyDstDataToHost()
+{
+	if (dst_data_d != NULL)
+	{
+		try
+		{
+			status = cudaMemcpy(dst_data_h, dst_data_d, dst_data_size*sizeof(float), cudaMemcpyDeviceToHost);
+			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_dst_data_host");
+		}
+		catch (CudaException& ce)
+		{
+			cout << ce.what() << endl;
+		}
+	}
+}

@@ -20,13 +20,7 @@ ConvNet::ConvNet()
 
 void start(float* img_data)
 {
-	AbstractDataLayerFactory* dataLayer = new DataLayerFactory();
-	dataLayer->set_src_data(img_data);
 	
-	AbstractLayerFactory* handler = new HandlerFactory();
-	handler->createLayer();
-
-	AbstractLayerFactory* conv1 = new ConvLayerFactory(handler, dataLayer);
 
 
 }
