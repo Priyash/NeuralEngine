@@ -7,7 +7,7 @@
    },
    "ConvLayer1":{
 	   	"Tensor_Shape":{  
-	      "batch_size":32,
+	      "batch_size":2,
 	      "input_feature_map":32,
 	      "image_width":128,
 	      "image_height":128
@@ -24,7 +24,7 @@
 	      "batch_size":1,
 	      "output_feature_map":64,
 	      "width":1,
-	      "height":1,
+	      "height":1
 	   },
 	   "Conv_Shape":{  
 	      "pad_width":1,

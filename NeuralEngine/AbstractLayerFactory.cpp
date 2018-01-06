@@ -19,22 +19,23 @@ InputLayerFactory::~InputLayerFactory()
 void InputLayerFactory::createLayer()
 {
 	img_data_list = imageManager->getImageMatrices(IMAGE::RESIZE);
-	
-	for (int i = 0; i < img_data_list.size(); i++)
+	int index = 0;
+	int batch_ID = 0;
+	Data_Batch db;
+	for (int i = 0; i < img_data_list.size(); i = i + batch_size)
 	{
-		Data_Batch db;
-		if (i == batch_size - 1)
+		for (int j = i; j < i + batch_size; j++)
 		{
-			batch_list.push_back(db);
-			db.batch_data_list.clear();
-		}
-		else
-		{
-			db.batch_ID = batch_prefix_name + to_string(i);
 			Mat img_obj = img_data_list[i];
 			float* img_data_h = img_obj.ptr<float>(0);
+			batch_ID++;
 			db.batch_data_list.push_back(img_data_h);
 		}
+
+		db.batch_ID = batch_prefix_name + to_string(batch_ID);
+		batch_list.push_back(db);
+		db.batch_data_list.clear();
+		
 	}
 }
 

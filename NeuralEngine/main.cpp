@@ -4,13 +4,15 @@
 #include <cassert>
 #include <cstdlib>
 #include <cuda.h>
-#include"Util.h"
+#include"ConvNet.h"
 
 
 int main()
 {
 
-	ImageManager* man = new ImageManager();
+	ConvNet* net = new ConvNet();
+	net->process_Data_Batch();
+	net->start_training();
 
 	return 0;
 }

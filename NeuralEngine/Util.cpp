@@ -5,6 +5,15 @@ Util* Util::util = 0;
 
 Util::Util()
 {
+
+}
+
+void Util::read_Json()
+{
+	config_file = "config.json";
+	ifstream json_reader(config_file);
+	IStreamWrapper isw(json_reader);
+	doc.ParseStream(isw);
 }
 
 void Util::check_cuda_status(cudnnStatus_t status, string error_module)
@@ -54,7 +63,8 @@ JSON_VALUE Util::getValue(CONFIG con, string key)
 vector<JSON_VALUE> Util::getValues(CONFIG con)
 {
 	vector<JSON_VALUE>values_list;
-	for (Value::ConstMemberIterator itr = doc[toStr(con).c_str()].MemberBegin(); itr != doc[toStr(con).c_str()].MemberEnd(); ++itr)
+	const Value& object = doc[toStr(con).c_str()];
+	for (Value::ConstMemberIterator itr = object.MemberBegin(); itr != object.MemberEnd(); ++itr)
 	{
 		JSON_VALUE jv;
 		if (itr->value.IsString())
@@ -145,10 +155,3 @@ Util* Util::getInstance()
 }
 
 
-void Util::read_Json()
-{
-	config_file = "config.json";
-	ifstream json_reader(config_file);
-	IStreamWrapper isw(json_reader);
-	doc.ParseStream(isw);
-}

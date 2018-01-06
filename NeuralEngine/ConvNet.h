@@ -10,8 +10,11 @@ public:
 	ConvNet();
 	~ConvNet();
 	void process_Data_Batch();
-	void process_image_data(float* img_data);
+	
 	void start_training();
+
+private:
+	void process_image_data(float* img_data);
 
 };
 
