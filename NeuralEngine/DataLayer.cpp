@@ -62,6 +62,12 @@ void DataLayer::compute_dst_data_size(int batch, int out_feature_map, int width,
 }
 
 
+void DataLayer::compute_workspace_size(size_t workspace_byte)
+{
+	this->workspace_byte = workspace_byte;
+}
+
+
 void DataLayer::alloc_src_data_to_device()
 {
 	try
@@ -116,6 +122,20 @@ void DataLayer::alloc_dst_data_to_device()
 }
 
 
+void DataLayer::alloc_workspace_data_to_device()
+{
+	try
+	{
+		status = cudaMalloc(&workspace_data_d, workspace_byte);
+		Util::getInstance()->check_cuda_status(status, "cudaMalloc_workspace_data");
+	}
+	catch (CudaException& ce)
+	{
+		cout << ce.what() << endl;
+	}
+}
+
+
 
 void DataLayer::alloc_src_data_to_host()
 {
@@ -140,6 +160,10 @@ void DataLayer::alloc_dst_data_to_host()
 	dst_data_h = new float[dst_data_size];
 }
 
+void DataLayer::alloc_workspace_data_to_host()
+{
+	//TODO : CHECK THIS LATER
+}
 
 //INITIALIZE DATAs
 void DataLayer::init_filter_data()
@@ -165,6 +189,12 @@ void DataLayer::init_dst_data(float* dst_data)
 }
 
 
+void DataLayer::init_workspace_data(void* workspace_data)
+{
+	this->workspace_data_d = workspace_data;
+}
+
+
 //DEVICE DATA POINTERS
 float* DataLayer::get_src_data_d()
 {
@@ -183,6 +213,12 @@ float* DataLayer::get_dst_data_d()
 	return dst_data_d;
 }
 
+void* DataLayer::get_workspace_data_d()
+{
+	return workspace_data_d;
+}
+
+
 //HOST DATA POINTERS
 float* DataLayer::get_src_data_h()
 {
@@ -199,6 +235,11 @@ float* DataLayer::get_bias_data_h()
 float* DataLayer::get_dst_data_h()
 {
 	return dst_data_h;
+}
+
+void* DataLayer::get_workspace_data_h()
+{
+	return workspace_data_h;
 }
 
 
@@ -267,6 +308,23 @@ void DataLayer::copyDstDataToDevice()
 	}
 }
 
+void DataLayer::copyWorkspaceDataToDevice()
+{
+	if (workspace_data_h != NULL)
+	{
+		try
+		{
+			status = cudaMemcpy(workspace_data_d, workspace_data_h, workspace_byte, cudaMemcpyHostToDevice);
+			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_workspace_byte_data");
+		}
+		catch (CudaException& ce)
+		{
+			cout << ce.what() << endl;
+		}
+	}
+}
+
+
 
 //COPY DATA BACK FROM DEVICE TO HOST
 void DataLayer::copySrcDataToHost()
@@ -322,6 +380,23 @@ void DataLayer::copyDstDataToHost()
 		{
 			status = cudaMemcpy(dst_data_h, dst_data_d, dst_data_size*sizeof(float), cudaMemcpyDeviceToHost);
 			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_dst_data_host");
+		}
+		catch (CudaException& ce)
+		{
+			cout << ce.what() << endl;
+		}
+	}
+}
+
+
+void DataLayer::copyWorkspaceDataToHost()
+{
+	if (workspace_data_d != NULL)
+	{
+		try
+		{
+			status = cudaMemcpy(workspace_data_h, workspace_data_d, workspace_byte, cudaMemcpyDeviceToHost);
+			Util::getInstance()->check_cuda_status(status, "cudaMemcpy_workspace_data_host");
 		}
 		catch (CudaException& ce)
 		{

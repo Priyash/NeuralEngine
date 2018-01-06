@@ -6,11 +6,13 @@
 class ConvNet
 {
 	AbstractLayerFactory* inputLayerfactory;
-
 public:
 	ConvNet();
-	void start(float* img_data);
 	~ConvNet();
+	void process_Data_Batch();
+	void process_image_data(float* img_data);
+	void start_training();
+
 };
 
 #endif

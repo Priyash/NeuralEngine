@@ -74,6 +74,11 @@ class ConvLayerFactory : public AbstractLayerFactory
 	//LAYER FACTORY HANDLER
 	AbstractLayerFactory* handlerFact;
 	AbstractDataLayerFactory* dataLayerFactory;
+
+	//CONVOLUTION FORWARD VARIABLES
+	cudnnConvolutionFwdAlgo_t fwd_algo;
+	size_t workspace_bytes;
+
 public:
 	//ConvLayerFactory(AbstractLayerFactory&,AbstractLayerFactory&, const AbstractDataLayerFactory&);
 	ConvLayerFactory(AbstractLayerFactory* hfact, AbstractDataLayerFactory* dataLayerFactory);

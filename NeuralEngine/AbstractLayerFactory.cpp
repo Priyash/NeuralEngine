@@ -189,13 +189,14 @@ void ConvLayerFactory::createLayer()
 
 	
 
-	cudnnConvolutionFwdAlgo_t fwd_algo = convTensor->getConvFwdAlgo(handlerFact->getCudnnFactoryHandler(), inputTensor->getTensorDescriptor(),
+	fwd_algo = convTensor->getConvFwdAlgo(handlerFact->getCudnnFactoryHandler(), inputTensor->getTensorDescriptor(),
 																	filterTensor->getFilterDescriptor(), convTensor->getConvDescriptor(),
 																	outputTensor->getTensorDescriptor(), getConvFwdPref(convShape.conv_fwd_pref),
 																	0);
-	size_t workspace_bytes = convTensor->getConvForwardWorkSpacesize(handlerFact->getCudnnFactoryHandler(), inputTensor->getTensorDescriptor(),
+	workspace_bytes = convTensor->getConvForwardWorkSpacesize(handlerFact->getCudnnFactoryHandler(), inputTensor->getTensorDescriptor(),
 																	filterTensor->getFilterDescriptor(), convTensor->getConvDescriptor(), 
 																	outputTensor->getTensorDescriptor(), fwd_algo);
+
 
 	//SRC DATA GPU ALLOCATIONS
 	dataLayerFactory->allocate_data_to_device(DATA_LAYER_ID::SRC);
@@ -219,9 +220,14 @@ void ConvLayerFactory::createLayer()
 	dataLayerFactory->copyDataToDevice(DATA_LAYER_ID::FILTER);
 	dataLayerFactory->copyDataToDevice(DATA_LAYER_ID::BIAS);
 
+	//WORKSPACE 
+	dataLayerFactory->compute_workspace_data_size(workspace_bytes);
+	dataLayerFactory->allocate_data_to_device(DATA_LAYER_ID::WORKSPACE);
+
 	//DST DATA COMPUTE SIZE
 	dataLayerFactory->compute_dst_size(outImgShape.batch_size, outImgShape.feature_map, outImgShape.cols, outImgShape.rows);
 	//DST ALLOCATE DATA TO HOST
+	dataLayerFactory->allocate_data_to_device(DATA_LAYER_ID::DST);
 	dataLayerFactory->allocate_data_to_host(DATA_LAYER_ID::DST);
 
 
@@ -230,14 +236,27 @@ void ConvLayerFactory::createLayer()
 
 void ConvLayerFactory::forward()
 {
-	
-	//ADD CONVOLUTION FORWARD 
-	//convTensor->conv_forward(handlerFact->getCudnnFactoryHandler(), 1.0f, inputTensor->getTensorDescriptor(), inputLayerFactory->getInputLayerData(),
-		//filterTensor->getFilterDescriptor(),)
-	//ADD BIAS
-	float* result;
+	//OUTPUT VARIABLES FOR THE CONVOLUTION FORWARD
+	float* result = dataLayerFactory->get_data_d(DATA_LAYER_ID::DST);
+	void* workspace_data = dataLayerFactory->get_workspace_data_d(DATA_LAYER_ID::WORKSPACE);
+	cudnnTensorDescriptor_t convoutputDesc = outputTensor->getTensorDescriptor();
+
+
+	//INVOKE CONVOLUTION FORWARD 
+	convTensor->conv_forward(handlerFact->getCudnnFactoryHandler(), 1.0f, inputTensor->getTensorDescriptor(),
+		dataLayerFactory->get_data_d(DATA_LAYER_ID::SRC), filterTensor->getFilterDescriptor(),
+		dataLayerFactory->get_data_d(DATA_LAYER_ID::FILTER), convTensor->getConvDescriptor(),
+		fwd_algo, workspace_data, workspace_bytes, 0.0f,
+		convoutputDesc, result);
+
 	dataLayerFactory->Init_dst_data(result);
-	dataLayerFactory->copyDataToHost(DATA_LAYER_ID::DST);
+	///dataLayerFactory->Init_workspace_data(workspace_data);
+
+	//ADD BIAS
+	convTensor->addBias(handlerFact->getCudnnFactoryHandler(), 1.0f, biasTensor->getTensorDescriptor(),
+		dataLayerFactory->get_data_d(DATA_LAYER_ID::BIAS), 0.0f, convoutputDesc, result);
+	
+	dataLayerFactory->Init_dst_data(result);
 }
 
 cudnnConvolutionFwdPreference_t ConvLayerFactory::getConvFwdPref(int n)
