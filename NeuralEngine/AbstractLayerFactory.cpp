@@ -147,11 +147,11 @@ void ConvLayerFactory::setConvShapeData(CONFIG con)
 	biasShape.rows = bias_data_list[BIAS_SHAPE_ID::BIAS_HEIGHT].json_int_value;
 
 	//FILTER SHAPE DATA FOR THE CONVOLUTION FILTER TENSOR
-	vector<JSON_VALUE>conv_filter_shape_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::FILTER_SHAPE]);
-	convfilterShape.n_input_feature_map = conv_filter_shape_data_list[FILTER_SHAPE_ID::FILTER_INPUT_FEATURE_MAP].json_int_value;
-	convfilterShape.n_output_feature_map = conv_filter_shape_data_list[FILTER_SHAPE_ID::FILTER_OUTPUT_FEATURE_MAP].json_int_value;
-	convfilterShape.filter_width = conv_filter_shape_data_list[FILTER_SHAPE_ID::FILTER_WIDTH].json_int_value;
-	convfilterShape.filter_height = conv_filter_shape_data_list[FILTER_SHAPE_ID::FILTER_HEIGHT].json_int_value;
+	vector<JSON_VALUE>filter_shape_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::FILTER_SHAPE]);
+	convfilterShape.n_input_feature_map = filter_shape_data_list[FILTER_SHAPE_ID::FILTER_INPUT_FEATURE_MAP].json_int_value;
+	convfilterShape.n_output_feature_map = filter_shape_data_list[FILTER_SHAPE_ID::FILTER_OUTPUT_FEATURE_MAP].json_int_value;
+	convfilterShape.filter_width = filter_shape_data_list[FILTER_SHAPE_ID::FILTER_WIDTH].json_int_value;
+	convfilterShape.filter_height = filter_shape_data_list[FILTER_SHAPE_ID::FILTER_HEIGHT].json_int_value;
 	
 	//CONV SHAPE DATA FOR THE CONVOLUTION TENSOR
 	vector<JSON_VALUE>conv_shape_data_list = Util::getInstance()->getValues(conv_layer_list[LAYER_ID::CONV_SHAPE]);

@@ -46,7 +46,7 @@ cudnnTensorDescriptor_t TensorLayer::getTensorDescriptor()
 
 FilterLayer::FilterLayer(const FilterShape& shape)
 {
-
+	this->shape = shape;
 }
 
 FilterLayer::~FilterLayer()
