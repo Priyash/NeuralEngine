@@ -42,7 +42,7 @@ class DataLayerFactory : public AbstractDataLayerFactory
 
 	AbstractDataLayer* dataLayer;
 public:
-	DataLayerFactory(float* src_data);
+	DataLayerFactory(float* src_data, int src_data_len);
 	~DataLayerFactory();
 	void compute_size(DATA_LAYER_ID id);
 	void compute_workspace_data_size(size_t workspace_byte);

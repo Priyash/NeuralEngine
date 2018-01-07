@@ -1,9 +1,9 @@
 #include "AbstractDataLayerFactory.h"
 
 
-DataLayerFactory::DataLayerFactory(float* src_data)
+DataLayerFactory::DataLayerFactory(float* src_data, int src_data_len)
 {
-	dataLayer = new DataLayer(src_data);
+	dataLayer = new DataLayer(src_data, src_data_len);
 }
 
 

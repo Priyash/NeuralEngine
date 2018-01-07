@@ -5,13 +5,6 @@
 #include"Util.h"
 #include<cuda.h>
 
-struct DataLayerResult
-{
-	float* output_d;
-	float* output_h;
-};
-
-
 
 class AbstractDataLayer
 {
@@ -125,7 +118,7 @@ class DataLayer : public AbstractDataLayer
 	
 
 public:
-	DataLayer(float* src_data);
+	DataLayer(float* src_data, int src_data_len);
 	~DataLayer();
 
 	//COMPUTE DATA SIZES FOR HOST AND DEVICES,READ ATTRIBUTES FROM JSON CONFIG FILE

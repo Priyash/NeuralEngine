@@ -303,7 +303,7 @@ void CudnnHandler::createCudnnHandler()
 	catch (CudaException& ce)
 	{
 		cout << ce.what() << endl;
-		exit(0);
+		//exit(0);
 	}
 }
 

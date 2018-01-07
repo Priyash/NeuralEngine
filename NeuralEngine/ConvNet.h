@@ -14,7 +14,7 @@ public:
 	void start_training();
 
 private:
-	void process_image_data(float* img_data);
+	void process_image_data(float* img_data, int img_data_size);
 
 };
 

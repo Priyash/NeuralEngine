@@ -8,6 +8,7 @@
 struct Data_Batch
 {
 	string batch_ID;
+	int img_data_size;
 	vector<float*> batch_data_list;
 };
 
@@ -43,6 +44,9 @@ public:
 	void forward(){}
 	cudnnHandle_t getCudnnFactoryHandler(){ cudnnHandle_t s; return s; }
 	cublasHandle_t getCublasFactoryHandler(){ cublasHandle_t s; return s; }
+
+private:
+	vector<float> getImagePtr(Mat img_obj, int row, int col);
 	
 };
 

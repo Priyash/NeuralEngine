@@ -27,7 +27,10 @@ void InputLayerFactory::createLayer()
 		for (int j = i; j < i + batch_size; j++)
 		{
 			Mat img_obj = img_data_list[i];
-			float* img_data_h = img_obj.ptr<float>(0);
+			float* img_data_h = new float[img_obj.rows*img_obj.cols];
+			vector<float>img_data = getImagePtr(img_obj, img_obj.rows, img_obj.cols);
+			db.img_data_size = img_data.size();
+			memcpy(img_data_h, &img_data[0], sizeof(float)* img_data.size());
 			batch_ID++;
 			db.batch_data_list.push_back(img_data_h);
 		}
@@ -39,6 +42,20 @@ void InputLayerFactory::createLayer()
 	}
 }
 
+vector<float> InputLayerFactory::getImagePtr(Mat img_obj, int row, int col)
+{
+	float* img_ptr = new float[row*col];
+	vector<float>data;
+	int index = 0;
+	for (int i = 0; i < row; i++)
+	{
+		for(int j = 0; j < col; j++)
+		{
+			data.push_back(img_obj.at<float>(i, j));
+		}
+	}
+	return data;
+}
 
 vector<Data_Batch>InputLayerFactory::getInputLayerData()
 {
@@ -198,7 +215,8 @@ void ConvLayerFactory::createLayer()
 																	filterTensor->getFilterDescriptor(), convTensor->getConvDescriptor(), 
 																	outputTensor->getTensorDescriptor(), fwd_algo);
 
-
+	std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB"
+		<< std::endl;
 	//SRC DATA GPU ALLOCATIONS
 	dataLayerFactory->allocate_data_to_device(DATA_LAYER_ID::SRC);
 	//SRC DATA COPY TO GPU 

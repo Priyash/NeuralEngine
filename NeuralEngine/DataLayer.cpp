@@ -1,9 +1,11 @@
 #include "DataLayer.h"
 
 
-DataLayer::DataLayer(float* src_data)
+DataLayer::DataLayer(float* src_data , int src_data_len)
 {
-	this->src_data_h = src_data_h;
+	//TODO : NO COPY IS HAPPENING, COPY THE ARRAY PROPERLY
+	this->src_data_h = src_data;
+	this->src_data_size = src_data_len;
 	Util::getInstance()->read_Json();
 }
 
@@ -24,7 +26,7 @@ double DataLayer::gen_random_number()
 
 void DataLayer::compute_src_data_size()
 {
-	//ALREADY ALLOCATED	
+	
 }
 
 void DataLayer::compute_filter_data_size()

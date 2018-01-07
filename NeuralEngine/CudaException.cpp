@@ -6,7 +6,6 @@ CudaException::CudaException(cudnnStatus_t status, string error_module)
 	
 	string s(cudnnGetErrorString(status));
 	msg = "Error on line " + __LINE__ + s + " for " + error_module;
-	int k = 0;
 }
 
 CudaException::CudaException(cublasStatus_t status, string error_module)
