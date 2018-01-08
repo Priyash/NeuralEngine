@@ -15,7 +15,7 @@ public:
 	~AbstractDataLayer(){}
 
 	//COMPUTE DATA SIZES FOR HOST AND DEVICES,READ ATTRIBUTES FROM JSON CONFIG FILE
-	virtual void compute_src_data_size() = 0;
+	virtual void compute_src_data_size(int src_data_size) = 0;
 	virtual void compute_filter_data_size() = 0;
 	virtual void compute_bias_data_size() = 0;
 	virtual void compute_dst_data_size(int batch,int out_feature_map,int width,int height) = 0;
@@ -72,6 +72,13 @@ public:
 	virtual void copyBiasDataToHost() = 0;
 	virtual void copyDstDataToHost() = 0;
 	virtual void copyWorkspaceDataToHost() = 0;
+
+	//DATA SIZE GETTER FUNCTION
+	virtual int getSrcDataSize() = 0;
+	virtual int getFilterDataSize() = 0;
+	virtual int getBiasDataSize() = 0;
+	virtual size_t getWorkspaceDataSize() = 0;
+	virtual int getDstDataSize() = 0;
 };
 
 
@@ -115,14 +122,16 @@ class DataLayer : public AbstractDataLayer
 	void* workspace_data_d;
 	void* workspace_data_h;
 	size_t workspace_byte;
+
+
 	
 
 public:
-	DataLayer(float* src_data, int src_data_len);
+	DataLayer(float* src_data);
 	~DataLayer();
 
 	//COMPUTE DATA SIZES FOR HOST AND DEVICES,READ ATTRIBUTES FROM JSON CONFIG FILE
-	void compute_src_data_size();
+	void compute_src_data_size(int src_data_size);
 	void compute_filter_data_size();
 	void compute_bias_data_size();
 	void compute_dst_data_size(int batch, int out_feature_map, int width, int height);
@@ -180,6 +189,13 @@ public:
 	void copyBiasDataToHost();
 	void copyDstDataToHost();
 	void copyWorkspaceDataToHost();
+
+	//DATA SIZE GETTER FUNCTION
+	int getSrcDataSize();
+	int getFilterDataSize();
+	int getBiasDataSize();
+	size_t getWorkspaceDataSize();
+	int getDstDataSize();
 	
 
 private:

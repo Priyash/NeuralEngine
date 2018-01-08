@@ -217,6 +217,7 @@ void ConvLayerFactory::createLayer()
 
 	std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB"
 		<< std::endl;
+
 	//SRC DATA GPU ALLOCATIONS
 	dataLayerFactory->allocate_data_to_device(DATA_LAYER_ID::SRC);
 	//SRC DATA COPY TO GPU 
@@ -224,8 +225,8 @@ void ConvLayerFactory::createLayer()
 
 
 	//CALCULATING THE SIZE FOR DATA ALLOCATION IN CPU
-	dataLayerFactory->compute_size(DATA_LAYER_ID::FILTER);
-	dataLayerFactory->compute_size(DATA_LAYER_ID::BIAS);
+	dataLayerFactory->compute_data_size(DATA_LAYER_ID::FILTER);
+	dataLayerFactory->compute_data_size(DATA_LAYER_ID::BIAS);
 	//ALLOCATE DATA TO HOST
 	dataLayerFactory->allocate_data_to_host(DATA_LAYER_ID::FILTER);
 	dataLayerFactory->allocate_data_to_host(DATA_LAYER_ID::BIAS);
@@ -244,10 +245,10 @@ void ConvLayerFactory::createLayer()
 	dataLayerFactory->allocate_data_to_device(DATA_LAYER_ID::WORKSPACE);
 
 	//DST DATA COMPUTE SIZE
-	dataLayerFactory->compute_dst_size(outImgShape.batch_size, outImgShape.feature_map, outImgShape.cols, outImgShape.rows);
+	dataLayerFactory->compute_dst_data_size(outImgShape.batch_size, outImgShape.feature_map, outImgShape.cols, outImgShape.rows);
 	//DST ALLOCATE DATA TO HOST
 	dataLayerFactory->allocate_data_to_device(DATA_LAYER_ID::DST);
-	dataLayerFactory->allocate_data_to_host(DATA_LAYER_ID::DST);
+	//dataLayerFactory->allocate_data_to_host(DATA_LAYER_ID::DST);
 
 
 }

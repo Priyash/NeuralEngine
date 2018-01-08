@@ -1,11 +1,9 @@
 #include "DataLayer.h"
 
 
-DataLayer::DataLayer(float* src_data , int src_data_len)
+DataLayer::DataLayer(float* src_data)
 {
-	//TODO : NO COPY IS HAPPENING, COPY THE ARRAY PROPERLY
 	this->src_data_h = src_data;
-	this->src_data_size = src_data_len;
 	Util::getInstance()->read_Json();
 }
 
@@ -24,9 +22,9 @@ double DataLayer::gen_random_number()
 	return dis(gen);
 }
 
-void DataLayer::compute_src_data_size()
+void DataLayer::compute_src_data_size(int src_data_size)
 {
-	
+	this->src_data_size = src_data_size;
 }
 
 void DataLayer::compute_filter_data_size()
@@ -405,4 +403,28 @@ void DataLayer::copyWorkspaceDataToHost()
 			cout << ce.what() << endl;
 		}
 	}
+}
+
+
+
+//DATA SIZE GETTER FUNCTION
+int DataLayer::getSrcDataSize()
+{
+	return src_data_size;
+}
+int DataLayer::getFilterDataSize()
+{
+	return filter_data_size;
+}
+int DataLayer::getBiasDataSize()
+{
+	return bias_data_size;
+}
+size_t DataLayer::getWorkspaceDataSize()
+{
+	return workspace_byte;
+}
+int DataLayer::getDstDataSize()
+{
+	return dst_data_size;
 }

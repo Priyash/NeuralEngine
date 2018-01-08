@@ -1,9 +1,9 @@
 #include "AbstractDataLayerFactory.h"
 
 
-DataLayerFactory::DataLayerFactory(float* src_data, int src_data_len)
+DataLayerFactory::DataLayerFactory(float* src_data)
 {
-	dataLayer = new DataLayer(src_data, src_data_len);
+	dataLayer = new DataLayer(src_data);
 }
 
 
@@ -13,13 +13,11 @@ DataLayerFactory::~DataLayerFactory()
 }
 
 
-void DataLayerFactory::compute_size(DATA_LAYER_ID id)
+void DataLayerFactory::compute_data_size(DATA_LAYER_ID id)
 {
 	switch (id)
 	{
-	case DATA_LAYER_ID::SRC:
-		dataLayer->compute_src_data_size();
-		break;
+
 	case DATA_LAYER_ID::FILTER:
 		dataLayer->compute_filter_data_size();
 		break;
@@ -32,7 +30,14 @@ void DataLayerFactory::compute_size(DATA_LAYER_ID id)
 	}
 }
 
-void DataLayerFactory::compute_dst_size(int batch, int out_feature_map, int width, int height)
+
+void DataLayerFactory::compute_src_data_size(int src_data_size)
+{
+	dataLayer->compute_src_data_size(src_data_size);
+}
+
+
+void DataLayerFactory::compute_dst_data_size(int batch, int out_feature_map, int width, int height)
 {
 	dataLayer->compute_dst_data_size(batch, out_feature_map, width, height);
 }
@@ -66,6 +71,37 @@ void DataLayerFactory::allocate_data_to_device(DATA_LAYER_ID id)
 	}
 }
 
+
+int DataLayerFactory::getDataSize(DATA_LAYER_ID id)
+{
+	int data_size = 0;
+	switch (id)
+	{
+	case DATA_LAYER_ID::SRC:
+		data_size = dataLayer->getSrcDataSize();
+		break;
+	case DATA_LAYER_ID::FILTER:
+		data_size = dataLayer->getFilterDataSize();
+		break;
+	case DATA_LAYER_ID::BIAS:
+		data_size = dataLayer->getBiasDataSize();
+		break;
+	case DATA_LAYER_ID::DST:
+		data_size = dataLayer->getDstDataSize();
+		break;
+
+	default:
+		return data_size;
+	}
+
+	return data_size;
+}
+size_t DataLayerFactory::getWorkspaceDataSize()
+{
+	return dataLayer->getWorkspaceDataSize();
+}
+
+
 void DataLayerFactory::allocate_data_to_host(DATA_LAYER_ID id)
 {
 	switch (id)
@@ -92,9 +128,6 @@ void DataLayerFactory::Init(DATA_LAYER_ID id)
 {
 	switch (id)
 	{
-	case DATA_LAYER_ID::SRC:
-		
-		break;
 	case DATA_LAYER_ID::FILTER:
 		dataLayer->init_filter_data();
 		break;
